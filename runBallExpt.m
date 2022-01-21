@@ -6,17 +6,6 @@
 % panels VR system
 %
 % Yvette Fisher 12/2021
-
-
-% TODO - Configure panels, for closed loop mode and set up which pattern to use
-% and set up external tiggering if you want things to
-% start with a trigger, or just have the pattern start if that is
-% easier....
-%panelParams.panelModeNum = [3, 0];
-%panelParams.patternNum = 1;
-%setUpClosedLoopPanelTrial(panelParams);
-% MATC moved script to the bottom 222101
-
 %
 
 % Start FicTrac in background from current experiment directory (config file must be in directory)
@@ -40,4 +29,5 @@ cmdstring = ['cd "' Socket_PATH '" & py ' SOCKET_SCRIPT_NAME ' &'];
 % easier....
 panelParams.panelModeNum = [3, 0];
 panelParams.patternNum = 1;
-MATCsetUpClosedLoopPanelTrial(panelParams);
+setUpClosedLoopPanelTrial(panelParams);
+Panel_com('start');
