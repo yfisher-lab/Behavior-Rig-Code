@@ -6,9 +6,22 @@ import select
 import numpy as np
 
 # *********** SET SOCKET INFO ***********
-# HOST = '127.0.0.1'  # The (receiving) host IP address (sock_host)
-HOST = '128.32.173.192.5661'  # The (receiving) host IP address (sock_host)
-PORT = 5661        # The (receiving) host port (sock_port)
+HOST = '127.0.0.1'  # The (receiving) host IP address (sock_host),
+PORT = 65413  # 5661  # The (receiving) host port (sock_port)
+# FicTrac sends out signals to this destination IP address when the
+# config file has parameter sock_host set as HOST value (e.g. 127.0.0.1) and
+# sock_port is set as PORT value (e.g. 5661)
+# to an appropriate number.
+# -- FicTrac readme --:
+# "Destination socket port for socket data output.
+# If unset or <= 0, FicTrac will not transmit data over sockets.
+# Note that a number of ports are reserved and some might be in use.
+# To avoid conflicts, you should check which UDP ports are available
+# on your machine prior to launching FicTrac (try something like 1111)."
+
+
+# HOST = '128.32.173.192.5661'  # The (receiving) host IP address (sock_host)
+
 
 
 # *********** SET ANALOG OUTPUT CHANNELS ***********

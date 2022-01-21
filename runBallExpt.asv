@@ -15,7 +15,7 @@
 %panelParams.panelModeNum = [3, 0];
 %panelParams.patternNum = 1;
 %setUpClosedLoopPanelTrial(panelParams);
-% MATC moved script to the bottom 222101
+% MATC moved script to the bottom 0
 
 %
 
@@ -40,4 +40,4 @@ cmdstring = ['cd "' Socket_PATH '" & py ' SOCKET_SCRIPT_NAME ' &'];
 % easier....
 panelParams.panelModeNum = [3, 0];
 panelParams.patternNum = 1;
-MATCsetUpClosedLoopPanelTrial(panelParams);
+setUpClosedLoopPanelTrial(panelParams);
