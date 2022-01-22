@@ -28,6 +28,6 @@ cmdstring = ['cd "' Socket_PATH '" & py ' SOCKET_SCRIPT_NAME ' &'];
 % start with a trigger, or just have the pattern start if that is
 % easier....
 panelParams.panelModeNum = [3, 0];
-panelParams.patternNum = 1;
+panelParams.patternNum = 2;
 setUpClosedLoopPanelTrial(panelParams);
 Panel_com('start');

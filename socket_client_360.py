@@ -135,7 +135,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
             # output_voltage_yaw_gain = clamp(output_voltage_yaw_gain, aout_min_volt,aout_max_volt)
             aout_yaw_gain.setVoltage(output_voltage_yaw_gain)
 
-            print(heading)
+            # print(heading)
+            print(output_voltage_yaw)
         
         else:
             # Didn't find any data - try again
