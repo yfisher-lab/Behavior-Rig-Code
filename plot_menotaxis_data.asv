@@ -1,7 +1,7 @@
 %% Plot data
 clear all;
 % Import file with data to plot
-importfile('Menotaxis_220208_trial_2') 
+importfile('Menotaxis_220208_trial_1') 
 
 %% Plot data
 figure;
@@ -28,6 +28,9 @@ end
 
 %vTotal = sum(v)/length(v);
 %vTotal = mean(v);
+
+%% velocity 2
+
 
 
 %% plot 

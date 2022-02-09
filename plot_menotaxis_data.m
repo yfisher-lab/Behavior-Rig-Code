@@ -29,6 +29,9 @@ end
 %vTotal = sum(v)/length(v);
 %vTotal = mean(v);
 
+%% velocity 2
+
+
 
 %% plot 
 %sampleTheta = [0,pi/2,pi,4*pi/3,2*pi,5.2]; %for troubleshooting
