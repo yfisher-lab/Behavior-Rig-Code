@@ -1,39 +1,55 @@
-%% Plot data
+
 clear all;
 % Import file with data to plot
-importfile('Menotaxis_220208_trial_1') 
+importfile('Menotaxis_220210_trial_3') 
 
-%% Plot data
+%% Plot data in sec 
 figure;
 plot( [1:1:length(ballData.data.LEDcommand)]/ballData.dqRate ,ballData.data.ballHeadingDeg);
 %hold on;
 figure;
 plot( [1:1:length(ballData.data.LEDcommand)]/ballData.dqRate ,ballData.data.x_posDeg);
 
+
+%% Plot data in min
+figure;
+plot( [1:1:length(ballData.data.LEDcommand)]/(60*ballData.dqRate) ,ballData.data.ballHeadingDeg);
+%hold on;
+figure;
+plot( [1:1:length(ballData.data.LEDcommand)]/(60*ballData.dqRate) ,ballData.data.x_posDeg);
+
+
 %% histogram - to check if results are random vs. she's actually menotaxing
 figure;
 hist.plot = histogram(ballData.data.ballHeadingDeg);
-
-% Polar plot of fly heading
-
-%% Calculate velocity
-sampleTheta = [0,pi/2,pi,4*pi/3,2*pi,5.2]; %for troubleshooting
-pos = sampleTheta %ballHeading ;
-t = length(sampleTheta); %length of ball heading ;
-v = zeros(length(t)-1,1) ;
-for i = 1:length(t)-1
-    v(i) = (pos(i+1)-pos(i))/(t(i+1)-t(i));
-end
+figure;
+hist.plot = histogram(ballData.data.ballyPosDeg);
+figure;
+hist.plot = histogram(ballData.data.ballxPosDeg);
 
 
-%vTotal = sum(v)/length(v);
-%vTotal = mean(v);
 
 %% velocity 2
 
+%sampleTheta = [0,pi/2,pi,4*pi/3,2*pi,5.2];%for troubleshooting
+%t = [1,2,3,4,5,6]
+%v = diff(sampleTheta)/diff(t);
+
+pos = ballData.data.ballHeadingDeg;
+%time = [];
+%for i = 1:length(ballData.data.ballHeadingDeg)
+ %   time(i,1) = i;
+%end
+
+v = diff(pos);
+v = v/ballData.dqRate;
+%vTotal = mean(v);
+
+figure;
+plot(length(ballData.data.LEDcommand)/ballData.dqRate ,v);
 
 
-%% plot 
+%% Polar plot for calculating vector
 %sampleTheta = [0,pi/2,pi,4*pi/3,2*pi,5.2]; %for troubleshooting
 
 x = [];
@@ -53,3 +69,83 @@ end
 xMean = mean(x);
 yMean = mean(y);
 compass(xMean,yMean);
+
+%% Polar plot for calculating vector 2
+%sampleTheta = [0,pi/2,pi,4*pi/3,2*pi,5.2]; %for troubleshooting
+
+x = [];
+y =[];
+figure;
+for i = 1:length(ballData.data.ballHeadingDeg)               
+    theta = ballData.data.ballHeadingRad(i);           
+    vLength = length(ballData.data.ballHeadingRad); % vector size
+    %i = 1:length(sampleTheta)
+    %theta = sampleTheta(i);
+    %vLength= (ones(length(sampleTheta),1));
+    [x(i),y(i)] = pol2cart (theta,vLength);
+    %compass(x,y);
+    hold on;
+end
+
+xMean = mean(x);
+yMean = mean(y);
+compass(xMean,yMean);
+
+
+%% Create intervals
+
+sampleTheta = [3,4,3,1,7,6];%[0,pi/2,pi,4*pi/3,2*pi,5.2]; %for troubleshooting
+
+start_interval = 0;
+end_interval = 2
+%end_interval  = (dq.Rate*60);
+intervals = 3;
+interval_length = (end_interval - start_interval)/intervals;
+x = start_interval + (end_interval-start_interval)*sampleTheta;
+y = sampleTheta;
+%x = start_interval + (end_interval-start_interval)*(ballData.data.ballHeadingRad);
+%y = (ballData.data.ballHeadingRad);
+figure;
+plot(x,y,'*')
+hold on
+for i=1:intervals
+    left = start_interval + interval_length*(i-1);
+    right = start_interval + interval_length*i;
+    ind = x >= left & x < right;
+    m_y = mean(y(ind));
+    line( [left,right],[m_y,m_y], 'Color','r' );
+    line( [left,left], [-0.5,1.5] ,'Color','black')
+end
+hold off
+
+%%
+
+time = [];
+
+for i = 1:10
+    j = 0:9;
+    i = ballData.data.ballHeadingRad(i*60000);
+    j = j+1;
+    time[t(j),m(i);
+
+end
+
+
+%%
+min=[];
+meanHeading=[];
+
+for i = 0:9
+    j = 1:length(ballData.data.ballHeadingRad); %fix this part
+    k = j*59999; 
+    leftEnd = ballData.data.ballHeadingRad(j);
+    rightEnd = ballData.data.ballHeadingRad(k);
+    int (i+1)= fixed.Interval(leftEnd,rightEnd); %intervals
+    int = mean(int);
+    length = i + 1;    % minutes
+    [min(length),meanHeading(int)];
+end
+
+
+    
+

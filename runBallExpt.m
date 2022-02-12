@@ -27,6 +27,7 @@ cmdstring = ['cd "' Socket_PATH '" & py ' SOCKET_SCRIPT_NAME ' &'];
 % and set up external tiggering if you want things to
 % start with a trigger, or just have the pattern start if that is
 % easier....
+%Panel_com()
 panelParams.panelModeNum = [3, 0];
 panelParams.patternNum = 1;
 panelParams.initialPosition = [0, 6];
@@ -47,46 +48,70 @@ Panel_com('start');
 % Setup data acquisition session (daq)
 dq = daq("ni"); %create data acquisition object
 addinput(dq,"Dev1", "ai0","Voltage"); % add analog input(AI) primary channel (xpos)
-addinput(dq,"Dev1", "ai1","Voltage"); %add AI secondary channel (ball_heading)
-addoutput(dq, "Dev1", "ao0", "Voltage") %add AO primary channel (LED)
+addinput(dq,"Dev1", "ai1","Voltage"); %add AI secondary channel (ball_heading/ yaw)
+addinput(dq,"Dev1", "ai2","Voltage"); %add AI third channel (ball_heading/ xPos)
+addinput(dq,"Dev1", "ai3","Voltage"); %add AI fourth channel (ball_heading/ yPos)
+addoutput(dq, "Dev1", "ao0", "Voltage"); %add AO primary channel (LED)
 
 
 dq.Channels(1).TerminalConfig = 'SingleEnded'; %save info that channel is in single ended on BOB 
 dq.Channels(2).TerminalConfig = 'SingleEnded';
+dq.Channels(3).TerminalConfig = 'SingleEnded';
+dq.Channels(4).TerminalConfig = 'SingleEnded';
 
-baselineTime = 1; %initial time LED off
-LEDonTime = 4*60; %time LED on in min
-afterTime = 2*60;%time LED off in min
+% create empty LED commmand array
+LEDcommand = [];
+
+% for LED flash trials
+baselineTime = 1; %initial time LED off, seconds
+LEDonTime = 5; %time LED on in min, second
+afterTime = 9;%time LED off in min, second
+REP_NUM = 10;
+
+% for non LED trials
 fullTime = 10*60; 
+
 highVoltage = 5; % V
 dq.Rate = 1000;
 dq_rate = dq.Rate;
 
 % Creating LED output
 %LEDcommand = [zeros(baselineTime * dq.Rate , 1); highVoltage * ones(LEDonTime * dq.Rate, 1); zeros(afterTime * dq.Rate, 1)]; % LED on/off sequence matrix
+%LEDcommand = repmat(LEDcommand,[REP_NUM,1]);
 
 LEDcommand = zeros(fullTime * dq.Rate , 1); %running w/o LED cycle
 
 % Acquire timestamped data
 data = readwrite(dq, LEDcommand);
+
+% Turn panels off
 Panel_com('stop');
 Panel_com('all_off'); % LEDs panel off
+
+% Save Data
 
 % Store ball heading and panel position (x_pos) values in mV
 x_pos = (data.Dev1_ai0); % DAC0 output from controller gives x frame 
 ball_heading = (data.Dev1_ai1); % phidget output 
+ball_xPos = (data.Dev1_ai2); % phidget output 
+ball_yPos = (data.Dev1_ai3); % phidget output 
 
 % change V to angle
-x_posRad = (x_pos) * (2 *pi) / 10;
+x_posRad = (x_pos) * (2 *pi) / 10;  % V to radians
 ball_headingRad = (ball_heading) * (2 *pi) / 10;
 
-x_posDeg = (x_pos) * 360 / 10;
+x_posDeg = (x_pos) * 360 / 10;    % V to degrees
 ball_headingDeg = (ball_heading) * 360 / 10;
+
+ball_xPos = (ball_xPos) * 360 / 10;
+ball_yPos = (ball_yPos) * 360 / 10;
 
 % create larger struct for all data and recording conditions
 ballData.data = data;
 ballData.data.x_posDeg = x_posDeg;
 ballData.data.ballHeadingDeg = ball_headingDeg;
+ballData.data.ballxPosDeg = ball_xPos;
+ballData.data.ballyPosDeg = ball_yPos;
 ballData.data.x_posRad = x_posRad;
 ballData.data.ballHeadingRad = ball_headingRad;
 ballData.dqRate = dq_rate;
@@ -97,23 +122,7 @@ end
 
 % Save data  
 saveData ('C:\Users\fisherlab\Documents\GitHub\Behavior-Rig-Code\Data\Menotaxis-MATC\',ballData, 'Menotaxis_');
-
-%% Plot data
-
-% Import file with data to plot
-%importfile('Menotaxis_220204_trial_1') 
-
-% %% Plot data
-figure;
-plot( [1:1:length(LEDcommand)]/dq.Rate ,ball_heading);
-%hold on;
-figure;
-plot( [1:1:length(LEDcommand)]/dq.Rate ,x_pos);
-%max(ball_heading)
-
-% histogram - to check if results are random vs. she's actually menotaxing
-figure;
-hist.plot = histogram(ball_heading);
+%saveData ('C:\Users\fisherlab\Documents\GitHub\Behavior-Rig-Code\Data\EPG_SPARC_JC\',ballData, 'EPG_SPARC_');
 
 
 
