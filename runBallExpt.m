@@ -26,11 +26,11 @@ cmdstring = ['cd "' Socket_PATH '" & py ' SOCKET_SCRIPT_NAME ' &'];
 %% TODO - Configure panels, for closed loop mode and set up which pattern to use
 % and set up external tiggering if you want things to
 % start with a trigger, or just have the pattern start if that is
-% easier....
+% easier.... 
 %Panel_com()
 panelParams.panelModeNum = [3, 0];
-panelParams.patternNum = 1;
-panelParams.initialPosition = [0, 6];
+panelParams.patternNum = 2;
+panelParams.initialPosition = [0, 0];
 setUpClosedLoopPanelTrial(panelParams);
 Panel_com('start');
 
@@ -38,7 +38,8 @@ Panel_com('start');
 %% Recording the data!!!
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 % Fictrac ball heading (0-10V)
-% Panel pattern postion (x pos)
+% Panel pattern postion (x pos)  
+ 
 
 %Set NI (terminal block) config
 %d = daqlist;  %see NI devices connected to computer
@@ -63,10 +64,10 @@ dq.Channels(4).TerminalConfig = 'SingleEnded';
 LEDcommand = [];
 
 % for LED flash trials
-baselineTime = 1; %initial time LED off, seconds
-LEDonTime = 5; %time LED on in min, second
-afterTime = 9;%time LED off in min, second
-REP_NUM = 10;
+baselineTime = 400/1000; %initial time LED off, ms
+LEDonTime = 100/1000; %time LED on in milisecond
+afterTime = 500/1000;%time LED off in milisecond
+REP_NUM = 60*10;
 
 % for non LED trials
 fullTime = 10*60; 
@@ -76,10 +77,10 @@ dq.Rate = 1000;
 dq_rate = dq.Rate;
 
 % Creating LED output
-%LEDcommand = [zeros(baselineTime * dq.Rate , 1); highVoltage * ones(LEDonTime * dq.Rate, 1); zeros(afterTime * dq.Rate, 1)]; % LED on/off sequence matrix
-%LEDcommand = repmat(LEDcommand,[REP_NUM,1]);
+LEDcommand = [zeros(baselineTime * dq.Rate , 1); highVoltage * ones(LEDonTime * dq.Rate, 1); zeros(afterTime * dq.Rate, 1)]; % LED on/off sequence matrix
+LEDcommand = repmat(LEDcommand,[REP_NUM,1]);
 
-LEDcommand = zeros(fullTime * dq.Rate , 1); %running w/o LED cycle
+%LEDcommand = zeros(fullTime * dq.Rate , 1); %running w/o LED cycle
 
 % Acquire timestamped data
 data = readwrite(dq, LEDcommand);

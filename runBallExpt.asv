@@ -26,7 +26,7 @@ cmdstring = ['cd "' Socket_PATH '" & py ' SOCKET_SCRIPT_NAME ' &'];
 %% TODO - Configure panels, for closed loop mode and set up which pattern to use
 % and set up external tiggering if you want things to
 % start with a trigger, or just have the pattern start if that is
-% easier....
+% easier.... 
 %Panel_com()
 panelParams.panelModeNum = [3, 0];
 panelParams.patternNum = 1;
@@ -38,7 +38,8 @@ Panel_com('start');
 %% Recording the data!!!
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 % Fictrac ball heading (0-10V)
-% Panel pattern postion (x pos)
+% Panel pattern postion (x pos)  
+ 
 
 %Set NI (terminal block) config
 %d = daqlist;  %see NI devices connected to computer
@@ -64,8 +65,8 @@ LEDcommand = [];
 
 % for LED flash trials
 baselineTime = 1; %initial time LED off, seconds
-LEDonTime = 5; %time LED on in min, second
-afterTime = 9;%time LED off in min, second
+LEDonTime = 9*60; %time LED on in second
+afterTime = 1*59;%time LED off in second
 REP_NUM = 10;
 
 % for non LED trials
@@ -122,7 +123,7 @@ end
 
 % Save data  
 saveData ('C:\Users\fisherlab\Documents\GitHub\Behavior-Rig-Code\Data\Menotaxis-MATC\',ballData, 'Menotaxis_');
-saveData ('C:\Users\fisherlab\Documents\GitHub\Behavior-Rig-Code\Data\EPG_SPARC_JC\',ballData, 'EPG_SPARC_');
+%saveData ('C:\Users\fisherlab\Documents\GitHub\Behavior-Rig-Code\Data\EPG_SPARC_JC\',ballData, 'EPG_SPARC_');
 
 
 
