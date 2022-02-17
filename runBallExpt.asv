@@ -64,10 +64,10 @@ dq.Channels(4).TerminalConfig = 'SingleEnded';
 LEDcommand = [];
 
 % for LED flash trials
-baselineTime = 1; %initial time LED off, seconds
-LEDonTime = 9*60; %time LED on in second
-afterTime = 1*59;%time LED off in second
-REP_NUM = 10;
+baselineTime = 400/1000; %initial time LED off in ms
+LEDonTime = 100/1000; %time LED on in milisecond
+afterTime = 500/1000;%time LED off in milisecond
+REP_NUM = 60*10;
 
 % for non LED trials
 fullTime = 10*60; 

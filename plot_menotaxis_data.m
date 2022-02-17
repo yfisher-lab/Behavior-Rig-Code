@@ -1,7 +1,7 @@
 
 clear all;
 % Import file with data to plot
-importfile('Menotaxis_220216_trial_3')
+importfile('Menotaxis_220216_trial_7')
 
 %% Plot data in sec 
 figure;
@@ -82,32 +82,12 @@ for i = 1:totalNumIntervals
     compass(xMean,yMean);
     c= compass(xMeanTot,yMeanTot,'r');
     c.LineWidth = 4;
-    title(['Third Trial 38A11'])
+    title(['Third Trial 38A11']);
     hold on;
 
 end
 
 
-%% Polar plot for calculating vector
-
-x = [];
-y =[];
-figure;
-for i = 1:length(ballData.data.ballHeadingDeg) 
-    [xMeanTot,yMeanTot]= meanVector(ballData.data.ballHeadingDeg)
-   % theta = ballData.data.ballHeadingRad(i);           
-    %vLength = length(ballData.data.ballHeadingRad); % vector size
-    %i = 1:length(sampleTheta)
-    %theta = sampleTheta(i);
-    %vLength= (ones(length(sampleTheta),1));
-    [x(i),y(i)] = pol2cart (theta,vLength);
-    %compass(x,y);
-    hold on;
-end
-
-xMean = mean(x);
-yMean = mean(y);
-compass(xMean,yMean);
 
 
 function [xMean,yMean]= meanVector(data)

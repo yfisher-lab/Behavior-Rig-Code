@@ -1,7 +1,7 @@
 
 clear all;
 % Import file with data to plot
-importfile('Menotaxis_220215_trial_3')
+importfile('Menotaxis_220216_trial_7')
 
 %% Plot data in sec 
 figure;
@@ -9,6 +9,13 @@ plot( [1:1:length(ballData.data.LEDcommand)]/ballData.dqRate ,ballData.data.ball
 %hold on;
 figure;
 plot( [1:1:length(ballData.data.LEDcommand)]/ballData.dqRate ,ballData.data.x_posDeg);
+
+figure;
+plot( [1:1:length(ballData.data.LEDcommand)]/ballData.dqRate ,ballData.data.ballxPosDeg);
+
+figure;
+plot( [1:1:length(ballData.data.LEDcommand)]/ballData.dqRate ,ballData.data.ballyPosDeg);
+
 
 
 %% Plot data in min
@@ -20,11 +27,11 @@ plot( [1:1:length(ballData.data.LEDcommand)]/(60*ballData.dqRate) ,ballData.data
 
 
 %% histogram - to check if results are random vs. she's actually menotaxing
+%figure;
+%hist.plot = histogram(ballData.data.ballHeadingDeg);
 figure;
-hist.plot = histogram(ballData.data.ballHeadingDeg);
-figure;
-hist.plot = histogram(ballData.data.ballyPosDeg);
-figure;
+%hist.plot = histogram(ballData.data.ballyPosDeg);
+%figure;
 hist.plot = histogram(ballData.data.ballxPosDeg);
 
 
@@ -75,7 +82,7 @@ for i = 1:totalNumIntervals
     compass(xMean,yMean);
     c= compass(xMeanTot,yMeanTot,'r');
     c.LineWidth = 4;
-    title('First Trial Fly 2')
+    title(['Third Trial 38A11'])
     hold on;
 
 end

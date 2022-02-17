@@ -29,8 +29,8 @@ cmdstring = ['cd "' Socket_PATH '" & py ' SOCKET_SCRIPT_NAME ' &'];
 % easier.... 
 %Panel_com()
 panelParams.panelModeNum = [3, 0];
-panelParams.patternNum = 2;
-panelParams.initialPosition = [0, 0];
+panelParams.patternNum = 1;
+panelParams.initialPosition = [0, 6];
 setUpClosedLoopPanelTrial(panelParams);
 Panel_com('start');
 
@@ -64,7 +64,7 @@ dq.Channels(4).TerminalConfig = 'SingleEnded';
 LEDcommand = [];
 
 % for LED flash trials
-baselineTime = 400/1000; %initial time LED off, ms
+baselineTime = 400/1000; %initial time LED off in ms
 LEDonTime = 100/1000; %time LED on in milisecond
 afterTime = 500/1000;%time LED off in milisecond
 REP_NUM = 60*10;
@@ -77,10 +77,10 @@ dq.Rate = 1000;
 dq_rate = dq.Rate;
 
 % Creating LED output
-LEDcommand = [zeros(baselineTime * dq.Rate , 1); highVoltage * ones(LEDonTime * dq.Rate, 1); zeros(afterTime * dq.Rate, 1)]; % LED on/off sequence matrix
-LEDcommand = repmat(LEDcommand,[REP_NUM,1]);
+%LEDcommand = [zeros(baselineTime * dq.Rate , 1); highVoltage * ones(LEDonTime * dq.Rate, 1); zeros(afterTime * dq.Rate, 1)]; % LED on/off sequence matrix
+%LEDcommand = repmat(LEDcommand,[REP_NUM,1]);
 
-%LEDcommand = zeros(fullTime * dq.Rate , 1); %running w/o LED cycle
+LEDcommand = zeros(fullTime * dq.Rate , 1); %running w/o LED cycle
 
 % Acquire timestamped data
 data = readwrite(dq, LEDcommand);
