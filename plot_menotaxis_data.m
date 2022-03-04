@@ -1,7 +1,7 @@
 
 clear all;
 % Import file with data to plot
-importfile('Menotaxis_220216_trial_7')
+importfile('Menotaxis_220225_trial_2')
 
 %% Plot data in sec 
 figure;
@@ -9,7 +9,7 @@ plot( [1:1:length(ballData.data.LEDcommand)]/ballData.dqRate ,ballData.data.ball
 %hold on;
 figure;
 plot( [1:1:length(ballData.data.LEDcommand)]/ballData.dqRate ,ballData.data.x_posDeg);
-
+%%
 figure;
 plot( [1:1:length(ballData.data.LEDcommand)]/ballData.dqRate ,ballData.data.ballxPosDeg);
 
@@ -82,7 +82,7 @@ for i = 1:totalNumIntervals
     compass(xMean,yMean);
     c= compass(xMeanTot,yMeanTot,'r');
     c.LineWidth = 4;
-    title(['Third Trial 38A11']);
+    title(['Dot Trial 38A11']);
     hold on;
 
 end

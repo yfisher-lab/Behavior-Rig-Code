@@ -8,7 +8,30 @@
 % Yvette Fisher 12/2021
 %
 clear all;
-% Start FicTrac in background from current experiment directory (config file must be in directory)
+
+%% Experiment Parameters
+USE_PANELS = false; %controls whether panels are used in trial (false -> off; true -> on)
+USE_LED = true; %controls whether LED are used in trial (false -> off; true -> on)
+
+% Configure panels, for closed loop mode and set up which pattern to use
+% and set up external tiggering if you want things to
+% start with a trigger, or just have the pattern start if that is
+% easier.... 
+%Panel_com()
+panelParams.panelModeNum = [3, 0];
+panelParams.patternNum = 1;
+panelParams.initialPosition = [0, 0];
+
+% Configure LED flashes
+LEDParams.baselineTime = 1; %initial time LED off in second
+LEDParams.LEDonTime = 15; % time LED on in second
+LEDParams.afterTime = 4; % time LED off in second
+LEDParams.REP_NUM = 10; %60*10;
+
+% TODO - for non LED trials
+fullTime = 5*60;
+
+%% Start FicTrac in background from current experiment directory (config file must be in directory)
 FT_PATH = 'C:\Users\fisherlab\Documents\GitHub\ficTrac\';
 FT_EXE_FILENAME = 'fictrac.exe';
 cmdStr = ['cd "', FT_PATH, '" ', '& start ', FT_PATH, FT_EXE_FILENAME];
@@ -23,17 +46,12 @@ SOCKET_SCRIPT_NAME = 'socket_client_360.py';
 cmdstring = ['cd "' Socket_PATH '" & py ' SOCKET_SCRIPT_NAME ' &'];
 [status] = system(cmdstring, '-echo');
 
-%% TODO - Configure panels, for closed loop mode and set up which pattern to use
-% and set up external tiggering if you want things to
-% start with a trigger, or just have the pattern start if that is
-% easier.... 
-%Panel_com()
-panelParams.panelModeNum = [3, 0];
-panelParams.patternNum = 1;
-panelParams.initialPosition = [0, 6];
-setUpClosedLoopPanelTrial(panelParams);
-Panel_com('start');
-
+%% Run panels
+if(USE_PANELS == 1)
+    % keep inside if statemnet
+    setUpClosedLoopPanelTrial(panelParams);    
+    Panel_com('start');
+end
 
 %% Recording the data!!!
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
@@ -60,36 +78,35 @@ dq.Channels(2).TerminalConfig = 'SingleEnded';
 dq.Channels(3).TerminalConfig = 'SingleEnded';
 dq.Channels(4).TerminalConfig = 'SingleEnded';
 
+%% Run LED
+
 % create empty LED commmand array
 LEDcommand = [];
-
-% for LED flash trials
-baselineTime = 400/1000; %initial time LED off in ms
-LEDonTime = 100/1000; %time LED on in milisecond
-afterTime = 500/1000;%time LED off in milisecond
-REP_NUM = 60*10;
-
-% for non LED trials
-fullTime = 10*60; 
 
 highVoltage = 5; % V
 dq.Rate = 1000;
 dq_rate = dq.Rate;
 
-% Creating LED output
-%LEDcommand = [zeros(baselineTime * dq.Rate , 1); highVoltage * ones(LEDonTime * dq.Rate, 1); zeros(afterTime * dq.Rate, 1)]; % LED on/off sequence matrix
-%LEDcommand = repmat(LEDcommand,[REP_NUM,1]);
-
-LEDcommand = zeros(fullTime * dq.Rate , 1); %running w/o LED cycle
+if(USE_LED == 1)
+    % Creating LED output
+    LEDcommand = [zeros(LEDParams.baselineTime * dq.Rate , 1); highVoltage * ones(LEDParams.LEDonTime * dq.Rate, 1); zeros(LEDParams.afterTime * dq.Rate, 1)]; % LED on/off sequence matrix
+    LEDcommand = repmat(LEDcommand,[LEDParams.REP_NUM,1]);
+else
+    % create empty LEDcommand
+    LEDcommand = zeros(fullTime * dq.Rate, 1);
+end
 
 % Acquire timestamped data
 data = readwrite(dq, LEDcommand);
 
-% Turn panels off
-Panel_com('stop');
-Panel_com('all_off'); % LEDs panel off
 
-% Save Data
+if(USE_PANELS == 1)
+    % Turn panels off
+    Panel_com('stop');
+    Panel_com('all_off'); % LEDs panel off
+end
+
+%% Save Data
 
 % Store ball heading and panel position (x_pos) values in mV
 x_pos = (data.Dev1_ai0); % DAC0 output from controller gives x frame 
@@ -117,13 +134,21 @@ ballData.data.x_posRad = x_posRad;
 ballData.data.ballHeadingRad = ball_headingRad;
 ballData.dqRate = dq_rate;
 ballData.data.LEDcommand = LEDcommand;
-if(exist("panelParams",'var'))
+
+if(USE_PANELS == 1)
     ballData.panelParams = panelParams;
 end
 
+if(USE_LED == 1)
+    ballData.LEDParams = LEDParams;
+end
+
 % Save data  
-saveData ('C:\Users\fisherlab\Documents\GitHub\Behavior-Rig-Code\Data\Menotaxis-MATC\',ballData, 'Menotaxis_');
-%saveData ('C:\Users\fisherlab\Documents\GitHub\Behavior-Rig-Code\Data\EPG_SPARC_JC\',ballData, 'EPG_SPARC_');
+%saveData ('C:\Users\fisherlab\Documents\GitHub\Behavior-Rig-Code\Data\Menotaxis-MATC\',ballData, 'Menotaxis_');
+%saveData('C:\Users\fisherlab\Dropbox\Data\EPG_SPARC_TLN\',ballData, 'EPG_SPARC_');
+saveData ('C:\Users\fisherlab\Documents\GitHub\Behavior-Rig-Code\Data\EPG_SPARC_JC\',ballData, 'EPG_SPARC_');
+
+
 
 
 

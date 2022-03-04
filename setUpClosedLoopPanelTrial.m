@@ -1,8 +1,8 @@
 function [ ] = setUpClosedLoopPanelTrial( panelParams )
-%SETUPCLOSEDLOPPPANELTRIAL Intializes the Panel visual display system by
+%SETUPCLOSEDLOOPPANELTRIAL Intializes the Panel visual display system by
 %setting up which Pattern and which Position_Function will be used. 
 %    
-% This funciton is meant to set up a Pattern to be ready to be played using
+% This function is meant to set up a Pattern to be ready to be played using
 % the Panel Arena system.  
 %
 % INPUT 
