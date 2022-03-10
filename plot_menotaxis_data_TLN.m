@@ -1,7 +1,7 @@
 
 clear all;
 % Import file with data to plot
-file = 'Menotaxis_220303_trial_18';
+file = 'Menotaxis_220225_trial_14';
 importfile(file)
 
 %% Plot data in sec 
@@ -24,23 +24,23 @@ xlabel('Time (sec)');
 ylabel('Ball Y-Position (deg)');
 
 %% Plot data in min
-figure;
-plot( [1:1:length(ballData.data.LEDcommand)]/(60*ballData.dqRate) ,ballData.data.ballHeadingDeg);
-title(file,'Interpreter','none');
-xlabel('Time (min)');
-ylabel('Ball Heading (deg)');
-
-figure;
-plot( [1:1:length(ballData.data.LEDcommand)]/(60*ballData.dqRate) ,ballData.data.ballxPosDeg);
-title(file,'Interpreter','none');
-xlabel('Time (min)');
-ylabel('Ball X-Position (deg)');
-
-figure;
-plot( [1:1:length(ballData.data.LEDcommand)]/(60*ballData.dqRate) ,ballData.data.ballyPosDeg);
-title(file,'Interpreter','none');
-xlabel('Time (min)');
-ylabel('Ball Y-Position (deg)');
+% figure;
+% plot( [1:1:length(ballData.data.LEDcommand)]/(60*ballData.dqRate) ,ballData.data.ballHeadingDeg);
+% title(file,'Interpreter','none');
+% xlabel('Time (min)');
+% ylabel('Ball Heading (deg)');
+% 
+% figure;
+% plot( [1:1:length(ballData.data.LEDcommand)]/(60*ballData.dqRate) ,ballData.data.ballxPosDeg);
+% title(file,'Interpreter','none');
+% xlabel('Time (min)');
+% ylabel('Ball X-Position (deg)');
+% 
+% figure;
+% plot( [1:1:length(ballData.data.LEDcommand)]/(60*ballData.dqRate) ,ballData.data.ballyPosDeg);
+% title(file,'Interpreter','none');
+% xlabel('Time (min)');
+% ylabel('Ball Y-Position (deg)');
 
 %% histogram - to check if results are random vs. she's actually menotaxing
 figure;
@@ -96,24 +96,19 @@ for i = 1:totalNumIntervals
     endInt = i * ballData.dqRate *INTERVAL_LENGTH;
     currMin = ballData.data.ballHeadingRad(startInt:endInt);
     [xMean,yMean] = meanVector (currMin);
-    [xMeanTot,yMeanTot] = meanVector (ballData.data.ballHeadingRad);
-   % for k = 1:length(currMin)
-%         theta =currMin(k);
-%         vLength =1; % vector size
-%         [x(k),y(k)] = pol2cart (theta,vLength);
-%     end
-%     xMean = mean(x);
-%     yMean = mean(y); 
-    compass(xMean,yMean);
-    c= compass(xMeanTot,yMeanTot,'r');
-    c.LineWidth = 4;
+    c = compass(xMean,yMean);
     hold on;    
 end
 
-title(file,'Interpreter','none');
-%todo -adjust compass parameters
-%rlim([0 1]);
+[xMeanTot,yMeanTot] = meanVector (ballData.data.ballHeadingRad);
+c = compass(xMeanTot,yMeanTot,'r');
+c.LineWidth = 4;
+
+ax = gca
+ax.YLim = [-1 1]
 view(90,90);
+
+title(file,'Interpreter','none');
 
 function [xMean,yMean]= meanVector(data)
 
