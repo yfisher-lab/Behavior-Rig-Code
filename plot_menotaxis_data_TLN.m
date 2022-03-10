@@ -1,7 +1,7 @@
 
 clear all;
 % Import file with data to plot
-file = 'Menotaxis_220225_trial_14';
+file = 'Menotaxis_220225_trial_1';
 importfile(file)
 
 %% Plot data in sec 
@@ -97,16 +97,19 @@ for i = 1:totalNumIntervals
     currMin = ballData.data.ballHeadingRad(startInt:endInt);
     [xMean,yMean] = meanVector (currMin);
     c = compass(xMean,yMean);
-    hold on;    
+    c = compass(0,1,'w')
+    hold on;  
 end
 
 [xMeanTot,yMeanTot] = meanVector (ballData.data.ballHeadingRad);
 c = compass(xMeanTot,yMeanTot,'r');
 c.LineWidth = 4;
+hold on;
 
-ax = gca
-ax.YLim = [-1 1]
-view(90,90);
+% ax = gca
+% ax.YLim = [-1 1]
+% ax.XLim = [-1 1]
+view(90,90)
 
 title(file,'Interpreter','none');
 
