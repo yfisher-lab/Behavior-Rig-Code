@@ -2,7 +2,7 @@
 %
 %
 %
-% Script for running fly on ball expeirment using FicTrac and Reiser LED
+% Script for running fly on ball experiment using FicTrac and Reiser LED
 % panels VR system
 %
 % Yvette Fisher 12/2021
@@ -10,8 +10,8 @@
 clear all;
 
 %% Experiment Parameters
-USE_PANELS = false; %controls whether panels are used in trial (false -> off; true -> on)
-USE_LED = true; %controls whether LED are used in trial (false -> off; true -> on)
+USE_PANELS = true; %controls whether panels are used in trial (false -> off; true -> on)
+USE_LED = false; %controls whether LED are used in trial (false -> off; true -> on)
 
 % Configure panels, for closed loop mode and set up which pattern to use
 % and set up external tiggering if you want things to
@@ -20,16 +20,16 @@ USE_LED = true; %controls whether LED are used in trial (false -> off; true -> o
 %Panel_com()
 panelParams.panelModeNum = [3, 0];
 panelParams.patternNum = 1;
-panelParams.initialPosition = [0, 0];
+panelParams.initialPosition = [0, 6];
 
 % Configure LED flashes
-LEDParams.baselineTime = 1; %initial time LED off in second
-LEDParams.LEDonTime = 15; % time LED on in second
-LEDParams.afterTime = 4; % time LED off in second
-LEDParams.REP_NUM = 10; %60*10;
+LEDParams.baselineTime = 900/1000; % initial time LED off in seconds
+LEDParams.LEDonTime = 100/1000; % time LED on in seconds
+LEDParams.afterTime = 29; % time LED off in seconds
+LEDParams.REP_NUM = 2*10; % sum(LEDParams)*REP_NUM = 600 for 10 min trial;
 
 % TODO - for non LED trials
-fullTime = 5*60;
+fullTime = 5*60; % total duration in seconds
 
 %% Start FicTrac in background from current experiment directory (config file must be in directory)
 FT_PATH = 'C:\Users\fisherlab\Documents\GitHub\ficTrac\';
@@ -144,9 +144,9 @@ if(USE_LED == 1)
 end
 
 % Save data  
-%saveData ('C:\Users\fisherlab\Documents\GitHub\Behavior-Rig-Code\Data\Menotaxis-MATC\',ballData, 'Menotaxis_');
-%saveData('C:\Users\fisherlab\Dropbox\Data\EPG_SPARC_TLN\',ballData, 'EPG_SPARC_');
-saveData ('C:\Users\fisherlab\Documents\GitHub\Behavior-Rig-Code\Data\EPG_SPARC_JC\',ballData, 'EPG_SPARC_');
+%saveData ('C:\Users\fisherlab\Dropbox\Data\Menotaxis-MATC',ballData, 'Menotaxis_');
+saveData('C:\Users\fisherlab\Dropbox\Data\TLN\Menotaxis',ballData, 'Menotaxis_');
+%saveData ('C:\Users\fisherlab\Dropbox\Data\EPG_SPARC_JC',ballData, 'EPG_SPARC_');
 
 
 
