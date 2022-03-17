@@ -1,7 +1,7 @@
 
 clear all;
 % Import file with data to plot
-file = 'Menotaxis_220314_trial_25';
+file = 'Menotaxis_220309_trial_8';
 importfile(file)
 
 %% Plot data in sec 
@@ -66,11 +66,14 @@ ylabel('Frequency');
 
 lowPassFilterCutOff = 25 %Hz; half of avg processing
 maxFlyVelocity = 1000 %deg/s
-[forwardVelocity,accumulatedPositionOut] = ficTracSignalDecoding(ballData.data.Dev1_ai3,ballData.dqRate,lowPassFilterCutOff,maxFlyVelocity);
+[ballVelocity,accumulatedPositionOut] = ficTracSignalDecoding(ballData.data.Dev1_ai3,ballData.dqRate,lowPassFilterCutOff,maxFlyVelocity);
+forwardVelocity = -1*(ballVelocity)
 
 figure;
-plot([1:1:length(ballData.data.LEDcommand)]/ballData.dqRate,forwardVelocity);
+plot([1:1:length(ballData.data.ballHeadingDeg)]/ballData.dqRate,forwardVelocity);
 title(file,'Interpreter','none');
+xlabel('Time')
+ylabel('Velocity')
 
 % (Sanity check) Plot Y_Pos and Forward Velocity
 % figure;
@@ -80,7 +83,8 @@ title(file,'Interpreter','none');
 % subplot(2,1,2)
 % plot(x,forwardVelocity)
 
-%% Transform heading values so vector direction is the position of the cue relative to the fly if 180 deg is facing forward
+%% Transform heading values so vector direction is the position of the cue 
+% relative to the fly if 180 deg is the cue directly in front
 transformedHeading = -1*(ballData.data.ballHeadingRad);
 
 %% Plot heading vector for a defined interval on a compass plot
@@ -107,17 +111,18 @@ end
 
 % plot total mean vector with a thick red line
 [xMeanTot,yMeanTot] = meanVector (transformedHeading);
-c = compass(xMeanTot,yMeanTot,'r');
+c = compass(xMeanTot,yMeanTot);
+c.Color = [1, 0, 0]
 c.LineWidth = 4;
 
 title(file,'Interpreter','none');
 subtitle('Avg Heading/min')
 view(90,90);
 
-%% Plot heading vector for a defined interval on a compass plot and exclude values where the fly is moving 
-%   slower than a defined threshold
+%% Plot heading vector for a defined interval on a compass plot and exclude 
+% values where the fly is moving slower than a defined threshold
 
-VELOCITY_THRESHOLD = 0.5 %deg/sec
+VELOCITY_THRESHOLD = 6 %deg/sec
 INTERVAL_LENGTH = 60; %seconds
 
 totalNumIntervals = length(ballData.data.ballHeadingDeg)/(ballData.dqRate*INTERVAL_LENGTH);
@@ -135,7 +140,7 @@ for i = 1:totalNumIntervals
     currVelocity = forwardVelocity(startInt:endInt);
     wantedIndex = find(currVelocity > VELOCITY_THRESHOLD);
     currWantedHeading = currHeading(wantedIndex);
-    [xMean,yMean] = meanVector (currWantedHeading); 
+    [xMean,yMean] = meanVector(currWantedHeading); 
     % plot on compass plot
     c = compass(xMean,yMean);
     % invisible vector for axes = 1
@@ -150,7 +155,7 @@ c.LineWidth = 4;
 
 % compass plot parameters
 title(file,'Interpreter','none');
-subtitle(['Avg Heading/min excluding velocity <' VELOCITY_THRESHOLD])
+subtitle(['Avg Heading/min excluding velocity < ', num2str(VELOCITY_THRESHOLD),'deg/sec'])
 view(90,90);
 
 %% functions
