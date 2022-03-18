@@ -20,16 +20,16 @@ USE_LED = false; %controls whether LED are used in trial (false -> off; true -> 
 %Panel_com()
 panelParams.panelModeNum = [3, 0];
 panelParams.patternNum = 1;
-panelParams.initialPosition = [0, 6];
+panelParams.initialPosition = [0, 0];
 
 % Configure LED flashes
 LEDParams.baselineTime = 900/1000; % initial time LED off in seconds
 LEDParams.LEDonTime = 100/1000; % time LED on in seconds
-LEDParams.afterTime = 29; % time LED off in seconds
-LEDParams.REP_NUM = 2*10; % sum(LEDParams)*REP_NUM = 600 for 10 min trial;
+LEDParams.afterTime = 4; % time LED off in seconds
+LEDParams.REP_NUM = 12*10; % sum(LEDParams)*REP_NUM = 600 for 10 min trial;
 
 % TODO - for non LED trials
-fullTime = 5*60; % total duration in seconds
+fullTime = 10*60; % total duration in seconds
 
 %% Start FicTrac in background from current experiment directory (config file must be in directory)
 FT_PATH = 'C:\Users\fisherlab\Documents\GitHub\ficTrac\';

@@ -1,7 +1,7 @@
 
 clear all;
 % Import file with data to plot
-file = 'Menotaxis_220309_trial_8';
+file = 'Menotaxis_220317_trial_19';
 importfile(file)
 
 %% Plot data in sec 
@@ -149,7 +149,7 @@ for i = 1:totalNumIntervals
 end
 
 % plot total mean vector with a thick red line
-[xMeanTot,yMeanTot] = meanVector (transformedHeading);
+[xMeanTot,yMeanTot] = meanVector (currWantedHeading);
 c= compass(xMeanTot,yMeanTot,'r');
 c.LineWidth = 4;
 

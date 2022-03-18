@@ -1,0 +1,40 @@
+clear all;
+
+%% Import file with data to plot
+% file = 'Menotaxis_220314_trial_25';
+% importfile(file)
+
+%% Analyze all files in a folder
+if nargin > 2
+    possibleTrialNums = varargin{1};
+end
+
+% prompt users in a gui to navegate to the folder we want to analyize
+DIRECTORYNAME = uigetdir();
+cd( DIRECTORYNAME );
+
+fileListDescription = fullfile(DIRECTORYNAME, '*.mat');
+fileList = dir( fileListDescription );
+% find which files contain the string 'trial'
+isATrialLogical = contains( {fileList.name}, 'trial');
+fileList = fileList( isATrialLogical ); % only keep files that are actually trial files
+
+counter = 1;
+allTrialsCounter = 1; % update the counter        
+
+% loop over all data trials within that folder
+for i = 1: length( fileList )
+    
+    % load current file
+    load( fileList(i).name)
+end
+
+%% Menotaxis test criteria
+forwardVelocityThreshold = 6; %deg/sec
+stDevThreshold = deg2rad(45);
+
+ballHeadingData = ballData.data.ballHeadingRad;
+ballForwardData = ballData.data.Dev1_ai3;
+sampleRate = ballData.dqRate;
+
+[MenotaxisBoolean]=meetsMenotaxisCriteria(ballHeadingData,ballForwardData,sampleRate,forwardVelocityThreshold,stDevThreshold);
