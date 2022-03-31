@@ -4,7 +4,7 @@ function [menotaxisBoolean, anglePreference, magnitudePreference] = meetsMenotax
 %   Detailed explanation goes here
 
 %% Calculate forward velocity
-lowPassFilterCutOff = 25 %Hz; half of avg processing
+lowPassFilterCutOff = 25 %Hz; half of avg processing speed
 maxFlyVelocity = 1000 %deg/s
 [ballVelocity,accumulatedPositionOut] = ficTracSignalDecoding(ballForwardData,sampleRate,lowPassFilterCutOff,maxFlyVelocity);
 forwardVelocity = -1*(ballVelocity);
@@ -14,20 +14,23 @@ wantedHeading = ballHeadingData(wantedIndex);
 transformedWantedHeading = -1*(wantedHeading);
 
 
-%% Calculate circular standard deviation
+%% Use circular standard deviation to determine whether fly is menotaxing
 circularStDev = circ_std(wantedHeading);
 if circularStDev > stDevThreshold %deg
     menotaxisBoolean = false;
+    anglePreference = false;
+    magnitudePreference = false;
 else
     menotaxisBoolean = true;
-    %[xMeanTot,yMeanTot] = meanVector (transformedWantedHeading);
-    [anglePreference, magnitudePreference] = meanVector (transformedWantedHeading);
+    [xMean,yMean] = meanVector (transformedWantedHeading);
+    [anglePrefRad, magnitudePreference] =cart2pol(xMean,yMean);
+    anglePreference = rad2deg(anglePrefRad)
 
-    figure;
-    compass(0,1,'w');
-    hold on;
-    compass(anglePreference, magnitudePreference,'r');
-    view(90,90)
+%     figure;
+%     compass(0,1,'w');
+%     hold on;
+%     compass(xMean,yMean,'r');
+%     view(90,90)
 end
 
 %% functions

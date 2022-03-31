@@ -1,4 +1,4 @@
-function [menotaxisBoolean, anglePreference] = meetsMenotaxisCriteria(ballHeadingData,ballForwardData,sampleRate,forwardVelocityThreshold,stDevThreshold)
+function [menotaxisBoolean, anglePreference, magnitudePreference] = meetsMenotaxisCriteria(ballHeadingData,ballForwardData,sampleRate,forwardVelocityThreshold,stDevThreshold)
 %Test whether fly is menotaxing or not during a whole trial based on
 %velocity and circular standard deviation.
 %   Detailed explanation goes here
@@ -11,8 +11,7 @@ forwardVelocity = -1*(ballVelocity);
 
 wantedIndex = find(forwardVelocity > forwardVelocityThreshold);
 wantedHeading = ballHeadingData(wantedIndex);
-transformedHeading = -1*(ballData.data.ballHeadingRad);
-
+transformedWantedHeading = -1*(wantedHeading);
 
 
 %% Calculate circular standard deviation
@@ -21,7 +20,15 @@ if circularStDev > stDevThreshold %deg
     menotaxisBoolean = false;
 else
     menotaxisBoolean = true;
-    anglePreference = meanVector (wantedHeading);
+    [xMean,yMean] = meanVector (transformedWantedHeading);
+    [anglePreferenceRad, magnitudePreference] =cart2pol(xMean,yMean);
+    anglePreference = rad2deg(anglePreferenceRad)
+
+    figure;
+    compass(0,1,'w');
+    hold on;
+    compass(xMean,yMean,'r');
+    view(90,90)
 end
 
 %% functions

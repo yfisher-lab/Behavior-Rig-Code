@@ -1,7 +1,7 @@
 
 clear all;
 % Import file with data to plot
-file = 'Menotaxis_220314_trial_3';
+file = 'Menotaxis_220330_trial_26';
 importfile(file)
 
 %% Plot data in sec 
@@ -110,12 +110,12 @@ for i = 1:totalNumIntervals
     [xMean,yMean] = meanVector (currHeading); 
     % plot on compass plot
     c = compass(xMean,yMean);
-    % plot arrows in a color gradient that changes over time
-    firstColor = [19, 16, 92]/92;
-    lastColor = [110,219,250]/250;
+    % create color gradient for arrows
+    firstColor = [0, 0, 51]/51;
+    lastColor = [204, 204, 255]/255;
     lineColors = [linspace(firstColor(1),lastColor(1),totalNumIntervals)', linspace(firstColor(2),lastColor(2),totalNumIntervals)', linspace(firstColor(3),lastColor(3),totalNumIntervals)'];
     c.Color = lineColors(i,:)
-    c.LineWidth = 2
+    % c.Color = [0, 0, 0]+(i*0.1) %black gradient
     % invisible vector for axes = 1
     c = compass(0,1,'w')
     hold on;    
@@ -155,12 +155,6 @@ for i = 1:totalNumIntervals
     [xMean,yMean] = meanVector(currWantedHeading); 
     % plot on compass plot
     c = compass(xMean,yMean);
-    % plot arrows in a color gradient that changes over time
-    firstColor = [19, 16, 92]/92;
-    lastColor = [110,219,250]/250;
-    lineColors = [linspace(firstColor(1),lastColor(1),totalNumIntervals)', linspace(firstColor(2),lastColor(2),totalNumIntervals)', linspace(firstColor(3),lastColor(3),totalNumIntervals)'];
-    c.Color = lineColors(i,:)
-    c.LineWidth = 2
     % invisible vector for axes = 1
     c = compass(0,1,'w')
     hold on;    

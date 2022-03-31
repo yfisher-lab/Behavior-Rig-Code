@@ -79,18 +79,18 @@ end
 % plotting to check how well unwrapping, cleaning and filtering worked
 % can be commented out once you are happy with the parameters
 
-figure('Position',[50, 50, 1000, 400]);  set(gcf, 'Color', 'w');
-ax(1) = subplot(4, 1, 1);
-plot(posRadians,  'DisplayName', 'postion (rad)'  ); hold on; legend('show');
-ylabel ('rad');
-ax(2) = subplot (4, 1, 2);
-plot(unwrappedPos, 'DisplayName', 'unwrappedPos' ); hold on; legend('show');
-ax(3) = subplot (4, 1, 3);
-plot(cleanedPos, 'DisplayName', 'cleanedPos' ); hold on; legend('show');
-ax(4) = subplot (4, 1, 4);
-plot(filteredPosition, 'DisplayName', 'filteredPosition' ); hold on; legend('show')
-linkaxes(ax,'x');
-legend('show')
+% figure('Position',[50, 50, 1000, 400]);  set(gcf, 'Color', 'w');
+% ax(1) = subplot(4, 1, 1);
+% plot(posRadians,  'DisplayName', 'postion (rad)'  ); hold on; legend('show');
+% ylabel ('rad');
+% ax(2) = subplot (4, 1, 2);
+% plot(unwrappedPos, 'DisplayName', 'unwrappedPos' ); hold on; legend('show');
+% ax(3) = subplot (4, 1, 3);
+% plot(cleanedPos, 'DisplayName', 'cleanedPos' ); hold on; legend('show');
+% ax(4) = subplot (4, 1, 4);
+% plot(filteredPosition, 'DisplayName', 'filteredPosition' ); hold on; legend('show')
+% linkaxes(ax,'x');
+% legend('show')
 
 
 % transform from radians into degrees, send to user
@@ -107,15 +107,15 @@ velocityOut = lowPassFilter( velocityOut, lowPassFilterCutOff, sampleRate );
 velocityOut = replaceValuesOutsideThresholdBound( velocityOut, maxFlyVelocity);
 
 % plotting to check degree calulation and velocity
-figure('Position',[50, 50, 1000, 400]);  set(gcf, 'Color', 'w');
-bx(1) = subplot(3, 1, 1);
-plot(filteredPosition, 'DisplayName', 'filteredPosition' ); hold on; legend('show');
-bx(1) = subplot(3, 1, 2);
-plot(accumulatedPositionOut, 'DisplayName', 'accumulatedPosition' ); hold on; legend('show');
-ylabel ('deg');
-bx(2) = subplot (3, 1, 3);
-plot(velocityOut, 'DisplayName', 'velocity' ); hold on; legend('show');
-linkaxes(bx,'x');
+% figure('Position',[50, 50, 1000, 400]);  set(gcf, 'Color', 'w');
+% bx(1) = subplot(3, 1, 1);
+% plot(filteredPosition, 'DisplayName', 'filteredPosition' ); hold on; legend('show');
+% bx(1) = subplot(3, 1, 2);
+% plot(accumulatedPositionOut, 'DisplayName', 'accumulatedPosition' ); hold on; legend('show');
+% ylabel ('deg');
+% bx(2) = subplot (3, 1, 3);
+% plot(velocityOut, 'DisplayName', 'velocity' ); hold on; legend('show');
+% linkaxes(bx,'x');
 
 
 end

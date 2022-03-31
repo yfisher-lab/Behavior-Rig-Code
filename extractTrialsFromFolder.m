@@ -1,4 +1,4 @@
-function [  trialFilesList , fullTrialFilesList , fullTrialNumList ] = extractTrialsFromFolder()
+function [  trialFilesList , fullTrialFilesList ] = extractTrialsFromFolder()
 %EXTRACTTRIALSWITHCERTAINSTIMULUSNAME searches thru a folder with Ephy data
 %from a single recording and extract all the trials that used a certain
 %stimulus
