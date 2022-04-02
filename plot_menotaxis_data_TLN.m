@@ -1,27 +1,27 @@
 
 clear all;
 % Import file with data to plot
-file = 'Menotaxis_220314_trial_3';
+file = 'Menotaxis_220331_trial_7';
 importfile(file)
 
 %% Plot data in sec 
-figure;
-plot( [1:1:length(ballData.data.LEDcommand)]/ballData.dqRate ,ballData.data.ballHeadingDeg);
-title(file,'Interpreter','none');
-xlabel('Time (sec)');
-ylabel('Ball Heading (deg)');
-
-figure;
-plot( [1:1:length(ballData.data.LEDcommand)]/ballData.dqRate ,ballData.data.ballxPosDeg);
-title(file,'Interpreter','none');
-xlabel('Time (sec)');
-ylabel('Ball X-Position (deg)');
-
-figure;
-plot( [1:1:length(ballData.data.LEDcommand)]/ballData.dqRate ,ballData.data.ballyPosDeg);
-title(file,'Interpreter','none');
-xlabel('Time (sec)');
-ylabel('Ball Y-Position (deg)');
+% figure;
+% plot( [1:1:length(ballData.data.LEDcommand)]/ballData.dqRate ,ballData.data.ballHeadingDeg);
+% title(file,'Interpreter','none');
+% xlabel('Time (sec)');
+% ylabel('Ball Heading (deg)');
+% 
+% figure;
+% plot( [1:1:length(ballData.data.LEDcommand)]/ballData.dqRate ,ballData.data.ballxPosDeg);
+% title(file,'Interpreter','none');
+% xlabel('Time (sec)');
+% ylabel('Ball X-Position (deg)');
+% 
+% figure;
+% plot( [1:1:length(ballData.data.LEDcommand)]/ballData.dqRate ,ballData.data.ballyPosDeg);
+% title(file,'Interpreter','none');
+% xlabel('Time (sec)');
+% ylabel('Ball Y-Position (deg)');
 
 %% Plot data in min
 figure;
@@ -30,17 +30,17 @@ title(file,'Interpreter','none');
 xlabel('Time (min)');
 ylabel('Ball Heading (deg)');
 
-figure;
-plot( [1:1:length(ballData.data.LEDcommand)]/(60*ballData.dqRate) ,ballData.data.ballxPosDeg);
-title(file,'Interpreter','none');
-xlabel('Time (min)');
-ylabel('Ball X-Position (deg)');
-
-figure;
-plot( [1:1:length(ballData.data.LEDcommand)]/(60*ballData.dqRate) ,ballData.data.ballyPosDeg);
-title(file,'Interpreter','none');
-xlabel('Time (min)');
-ylabel('Ball Y-Position (deg)');
+% figure;
+% plot( [1:1:length(ballData.data.LEDcommand)]/(60*ballData.dqRate) ,ballData.data.ballxPosDeg);
+% title(file,'Interpreter','none');
+% xlabel('Time (min)');
+% ylabel('Ball X-Position (deg)');
+% 
+% figure;
+% plot( [1:1:length(ballData.data.LEDcommand)]/(60*ballData.dqRate) ,ballData.data.ballyPosDeg);
+% title(file,'Interpreter','none');
+% xlabel('Time (min)');
+% ylabel('Ball Y-Position (deg)');
 
 %% histogram - to check if results are random vs. she's actually menotaxing
 figure;

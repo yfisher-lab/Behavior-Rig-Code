@@ -23,6 +23,7 @@ fileList = dir( fileListDescription );
 isATrialLogical = contains( {fileList.name}, 'trial');
 fileList = fileList( isATrialLogical ); % only keep files that are actually trial files
 
+
 counter = 1;
 allTrialsCounter = 1; % update the counter        
 

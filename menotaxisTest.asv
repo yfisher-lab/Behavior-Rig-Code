@@ -1,11 +1,11 @@
 %% Analyze one file
 clear all;
 
-file = 'Menotaxis_220311_trial_3';
+file = 'Menotaxis_220331_trial_11';
 importfile(file)
 
 % Menotaxis test criteria
-forwardVelocityThreshold = 6; %deg/sec
+forwardVelocityThreshold = 30; %deg/sec
 stDevThreshold = deg2rad(45);
 
 ballHeadingData = ballData.data.ballHeadingRad;
@@ -13,30 +13,62 @@ ballForwardData = ballData.data.Dev1_ai3;
 sampleRate = ballData.dqRate;
 
 % Menotaxis test
-[menotaxisBoolean,anglePreference,magnitudePreference]=meetsMenotaxisCriteria(ballHeadingData,ballForwardData,sampleRate,forwardVelocityThreshold,stDevThreshold);
+[menotaxisResults,menotaxisBoolean,anglePreference,magnitudePreference,proportionDataUsed,circStDev]=meetsMenotaxisCriteria(ballHeadingData,ballForwardData,sampleRate,forwardVelocityThreshold,stDevThreshold);
 
+menotaxisResults.fileName = file;
+menotaxisResults.cuePosition = ballData.panelParams.initialPosition;
+if isfield(ballData,'LEDParams')
+    menotaxisResults.LED = 'ON';
+else
+    menotaxisResults.LED = 'OFF';
+end
+menotaxisResults.durationMinutes = length(ballData.data.LEDcommand)/(60*ballData.dqRate); %min
+
+% Save results in excel
+% trialResults = struct2table(menotaxisResults)
+% saveFileName = ['C:\Users\fisherlab\Dropbox\Data\TLN\Menotaxis\Results\',file,'_results.xlsx']
+% writetable (trialResults,saveFileName)
 
 %% Analyze all files in a folder
 clear all;
 
 [trialFilesList,fullTrialFilesList] = extractTrialsFromFolder()
 
-totalMenotaxisResults = struct();
+menotaxisResults = struct();
 
 % fileNames = trialFilesList.name
 for i = 1:length(trialFilesList) 
-    file = trialFilesList(i).name %doesn't go down the column; trialFilesList.name(i) doesn't work
+    file = trialFilesList(i).name
     importfile(file)
     % Menotaxis test criteria
-    forwardVelocityThreshold = 6; %deg/sec
-    stDevThreshold = deg2rad(45);
+    forwardVelocityThreshold = 30; %deg/sec
+    stDevThreshold = deg2rad(90);
     ballHeadingData = ballData.data.ballHeadingRad;
     ballForwardData = ballData.data.Dev1_ai3;
     sampleRate = ballData.dqRate;
     % Menotaxis test
-    [menotaxisBoolean,anglePreference,magnitudePreference]=meetsMenotaxisCriteria(ballHeadingData,ballForwardData,sampleRate,forwardVelocityThreshold,stDevThreshold);
-    %want to append struct with menotaxis test results
-
-    totalMenotaxisResults(i).filename = file;
-
+    [menotaxisBoolean,anglePreference,magnitudePreference,proportionDataUsed,circStDev]=meetsMenotaxisCriteria(ballHeadingData,ballForwardData,sampleRate,forwardVelocityThreshold,stDevThreshold);
+    % Save menotaxis results
+    menotaxisResults(i).filename = file;
+    menotaxisResults(i).menotaxisBoolean = menotaxisBoolean;
+    menotaxisResults(i).anglePreference = anglePreference;
+    menotaxisResults(i).magnitudePreference = magnitudePreference;
+    menotaxisResults(i).proportionDataUsed = proportionDataUsed;
+    menotaxisResults(i).circStDev = circStDev;
+    if isfield(ballData,'panelParams')
+        menotaxisResults(i).cuePosition = ballData.panelParams.initialPosition;
+    else
+        menotaxisResults(i).cuePosition = 'none'
+    end
+    if isfield(ballData,'LEDParams')
+        menotaxisResults.LED = ('ON');
+    else
+        menotaxisResults.LED = 'OFF';
+    end
+    menotaxisResults.duration = length(ballData.data.LEDcommand)/(60*ballData.dqRate); %min
 end
+
+% Export results to excel
+trialResults = struct2table(menotaxisResults)
+saveFileName = ['C:\Users\fisherlab\Dropbox\Data\TLN\Menotaxis\Results\',datestr(now,'yymmdd'),'_results.xlsx']
+writetable (trialResults,saveFileName)

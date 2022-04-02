@@ -1,4 +1,4 @@
-function [menotaxisBoolean, anglePreference, magnitudePreference] = meetsMenotaxisCriteria(ballHeadingData,ballForwardData,sampleRate,forwardVelocityThreshold,stDevThreshold)
+function [menotaxisResults, menotaxisBoolean, anglePreference, magnitudePreference,proportionDataUsed,circStDev] = meetsMenotaxisCriteria(ballHeadingData,ballForwardData,sampleRate,forwardVelocityThreshold,stDevThreshold)
 %Test whether fly is menotaxing or not during a whole trial based on
 %velocity and circular standard deviation.
 %   Detailed explanation goes here
@@ -26,12 +26,25 @@ else
     [anglePrefRad, magnitudePreference] =cart2pol(xMean,yMean);
     anglePreference = rad2deg(anglePrefRad)
 
+     % Plot meanVector to sanity check
 %     figure;
 %     compass(0,1,'w');
 %     hold on;
 %     compass(xMean,yMean,'r');
 %     view(90,90)
 end
+
+%% Calculate proportion of data used and circular standard deviation for all trials
+proportionDataUsed = 100*(length(wantedHeading)/length(ballHeadingData)) %percentage
+circStDev = circ_std(wantedHeading)
+
+%% Save results into structure
+menotaxisResults = struct()
+menotaxisResults.menotaxisBoolean = menotaxisBoolean
+menotaxisResults.anglePreference = anglePreference
+menotaxisResults.magnitudePreference = magnitudePreference
+menotaxisResults.proportionDataUsed = proportionDataUsed
+menotaxisResults.circStDev = circStDev
 
 %% functions
 

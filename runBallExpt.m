@@ -10,7 +10,7 @@
 clear all;
 
 %% Experiment Parameters
-USE_PANELS = false; %controls whether panels are used in trial (false -> off; true -> on)
+USE_PANELS = true; %controls whether panels are used in trial (false -> off; true -> on)
 USE_LED = false; %controls whether LED are used in trial (false -> off; true -> on)
 
 % Configure panels, for closed loop mode and set up which pattern to use
