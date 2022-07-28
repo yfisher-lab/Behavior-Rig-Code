@@ -1,7 +1,7 @@
 
 clear all;
 % Import file with data to plot
-file = 'Menotaxis_220331_trial_7';
+file = 'Menotaxis_220329_trial_7';
 importfile(file)
 
 %% Plot data in sec 
@@ -35,12 +35,12 @@ ylabel('Ball Heading (deg)');
 % title(file,'Interpreter','none');
 % xlabel('Time (min)');
 % ylabel('Ball X-Position (deg)');
-% 
-% figure;
-% plot( [1:1:length(ballData.data.LEDcommand)]/(60*ballData.dqRate) ,ballData.data.ballyPosDeg);
-% title(file,'Interpreter','none');
-% xlabel('Time (min)');
-% ylabel('Ball Y-Position (deg)');
+
+figure;
+plot( [1:1:length(ballData.data.LEDcommand)]/(60*ballData.dqRate) ,ballData.data.ballyPosDeg);
+title(file,'Interpreter','none');
+xlabel('Time (min)');
+ylabel('Ball Y-Position (deg)');
 
 %% histogram - to check if results are random vs. she's actually menotaxing
 figure;
@@ -49,11 +49,11 @@ title(file,'Interpreter','none');
 xlabel('Ball Heading (deg)');
 ylabel('Frequency');
 
-%figure;
-%hist.plot = histogram(ballData.data.ballyPosDeg);
-%title(file,'Interpreter','none');
-%xlabel('Ball Y-Position (deg)');
-%ylabel('Frequency');
+% figure;
+% hist.plot = histogram(ballData.data.ballyPosDeg);
+% title(file,'Interpreter','none');
+% xlabel('Ball Y-Position (deg)');
+% ylabel('Frequency');
 
 %figure;
 %hist.plot = histogram(ballData.data.ballxPosDeg);
@@ -64,10 +64,10 @@ ylabel('Frequency');
 
 %% Calculate forward velocity
 
-lowPassFilterCutOff = 25 %Hz; half of avg processing
-maxFlyVelocity = 1000 %deg/s
+lowPassFilterCutOff = 25; %Hz; half of avg processing
+maxFlyVelocity = 1000; %deg/s
 [ballVelocity,accumulatedPositionOut] = ficTracSignalDecoding(ballData.data.Dev1_ai3,ballData.dqRate,lowPassFilterCutOff,maxFlyVelocity);
-forwardVelocity = -1*(ballVelocity)
+forwardVelocity = -1*(ballVelocity);
 
 figure;
 plot([1:1:length(ballData.data.ballHeadingDeg)]/ballData.dqRate,forwardVelocity);

@@ -20,7 +20,7 @@ USE_LED = false; %controls whether LED are used in trial (false -> off; true -> 
 %Panel_com()
 panelParams.panelModeNum = [3, 0];
 panelParams.patternNum = 1;
-panelParams.initialPosition = [0, 0];
+panelParams.initialPosition = [0, 6];
 
 % Configure LED flashes
 LEDParams.baselineTime = 900/1000; % initial time LED off in seconds

@@ -1,4 +1,4 @@
-function [menotaxisResults, menotaxisBoolean, anglePreference, magnitudePreference,proportionDataUsed,circStDev,averageVelocity] = meetsMenotaxisCriteria(ballHeadingData,ballForwardData,sampleRate,forwardVelocityThreshold,stDevLimit, dataThreshold)
+function [menotaxisResults, menotaxisBoolean, anglePreference, magnitudePreference,proportionDataUsed,circStDev,averageVelocity] = meetsMenotaxisCriteria(ballHeadingData,ballForwardData,sampleRate,forwardVelocityThreshold,stDevLi, dataThreshold)
 %Test whether fly is menotaxing or not during a whole trial based on
 %velocity, circular standard deviation, and proportion of data used.
 %   Detailed explanation goes here
@@ -14,7 +14,7 @@ wantedHeading = ballHeadingData(wantedIndex);
 transformedWantedHeading = -1*(wantedHeading);
 
 
-%% Calculate proportion of data used, circular standard deviation, and average velocity for all trials
+%% Calculate proportion of data used and circular standard deviation for all trials
 proportionDataUsed = 100*(length(wantedHeading)/length(ballHeadingData)) %percentage
 circStDevRad = circ_std(wantedHeading)
 circStDev = rad2deg(circStDevRad)
@@ -22,14 +22,14 @@ averageVelocity = mean(forwardVelocity)
 
 
 %% Use circular standard deviation to determine whether fly is menotaxing
-if circStDevRad > stDevLimit;
+if circStDevRad > stDevThreshold;
     menotaxisBoolean = false;
     anglePreference = false;
     magnitudePreference = false;
-% elseif proportionDataUsed < dataThreshold;
-%     menotaxisBoolean = false;
-%     anglePreference = false;
-%     magnitudePreference = false;
+elseif proportionDataUsed < dataThreshold;
+    menotaxisBoolean = false;
+    anglePreference = false;
+    magnitudePreference = false;
 else
     menotaxisBoolean = true;
     [xMean,yMean] = meanVector (transformedWantedHeading);
