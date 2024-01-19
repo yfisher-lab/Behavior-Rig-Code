@@ -113,37 +113,14 @@ end
 
 %% Save Data
 
-% Store ball heading and panel position (x_pos) values in mV
-x_pos = (data.Dev1_ai0); % DAC0 output from controller gives x frame 
-ball_heading = (data.Dev1_ai1); % phidget output 
-ball_xPos = (data.Dev1_ai2); % phidget output 
-ball_yPos = (data.Dev1_ai3); % phidget output 
-
-% change V to angle (radians)
-x_posRad = (x_pos) * (2*pi) / 10;  % V to radians
-ball_headingRad = (ball_heading) * (2 *pi) / 10;
-
-% change V to angle (degrees)
-x_posDeg = (x_pos) * 360 / 10;    % V to degrees
-ball_headingDeg = (ball_heading) * 360 / 10;
-
-ball_xPos = (ball_xPos) * 360 / 10;
-ball_yPos = (ball_yPos) * 360 / 10;
-
-% create larger struct for all data and recording conditions
-%ballData.data = data;
+ballData.data = data;
 ballData.data.DAC0 = data.Dev1_ai0;
 ballData.data.PhidgetCh0 = data.Dev1_ai1;
 ballData.data.PhidgetCh1 = data.Dev1_ai2;
 ballData.data.PhidgetCh2 = data.Dev1_ai3;
-ballData.data.x_posDeg = x_posDeg;
-ballData.data.ballHeadingDeg = ball_headingDeg;
-ballData.data.ballxPosDeg = ball_xPos;
-ballData.data.ballyPosDeg = ball_yPos;
-ballData.data.x_posRad = x_posRad;
-ballData.data.ballHeadingRad = ball_headingRad;
-ballData.dqRate = dq.Rate;
 ballData.data.daqCommand = daqCommand;
+
+ballData.dqRate = dq.Rate;
 
 if(USE_PANELS == 1)
     ballData.panelParams = panelParams;
@@ -153,7 +130,35 @@ if(USE_LED == 1)
     ballData.LEDParams = LEDParams;
 end
 
-saveData('C:\Users\fisherlab\Documents\AJH-arena-data', ballData, 'Menotaxis', flyNumber);
+% Store ball heading and panel position values in mV
+bar_xPos = (data.Dev1_ai0); % DAC0 output from controller gives bar x-pos
+ball_heading = (data.Dev1_ai1); % phidget output Ch0 [yaw]
+ball_xPos = (data.Dev1_ai2); % phidget output Ch1 [roll]
+ball_yPos = (data.Dev1_ai3); % phidget output Ch2 [pitch]
+
+% Change V to angle (degrees)
+bar_xPos = (bar_xPos) * 360 / 10; % V to degrees
+ball_headingDeg = (ball_heading) * 360 / 10;
+ball_xPos = (ball_xPos) * 360 / 10;
+ball_yPos = (ball_yPos) * 360 / 10;
+
+ballData.data.barXPos = bar_xPos;
+ballData.data.ballHeading = ball_headingDeg;
+ballData.data.ballXPos = ball_xPos;
+ballData.data.ballYPos = ball_yPos;
+
+% % Change V to angle (radians)
+% bar_xPosRad = (bar_xPos) * (2*pi) / 10;  % V to radians
+% ball_headingRad = (ball_heading) * (2 *pi) / 10;
+% ballData.data.barXPos_rad = bar_xPosRad;
+% ballData.data.ballHeading_rad = ball_headingRad;
+
+
+saveData('C:\Users\fisherlab\Documents\AJH-arena-data',...
+            ballData, '1hrClosedLoop', flyNumber);
+
+
+%%
 
 % saveData ('C:\Users\fisherlab\Dropbox\Data\Menotaxis-MATC',ballData, 'Menotaxis_');
 % saveData('C:\Users\fisherlab\Dropbox\Data\TLN\Menotaxis',ballData, 'Menotaxis_');
