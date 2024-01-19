@@ -1,19 +1,22 @@
-function [] = saveData( directory , ballData, expName)
+function [] = saveData( directory , ballData, expName, flyNumberIn)
 %SAVEDATA
 % INPUT
 %       directory - location where the data should be saved
 %       ballData - data to be saved in that location
-%       expName - experiment name/ type ie BallData
+%       expName - experiment name/ type, e.g. 'Menotaxis'
+%       flyNumberIn - fly ID (for multiple trials w/ same fly on the same day)
 %
 % The data will be saved as %'BallData_YYMMDD_trial_##'
 % where YY== year, MM = month, DD= day and ## is the next trial that
 % doesn't yet exist in that folder for that date
 %
 % Yvette Fisher and Jessica Co 2/2022
+% Andrew added 'flyNumber' modifications 1/2024
 
 % make date number string
 format = 'yymmdd';  %YYMMDD format
-fileNamePrefix = [ expName datestr(now, format) ]; % today's date ie 'BallData_161014'
+flyNum = num2str(flyNumberIn);
+fileNamePrefix = [ expName '_' datestr(now, format) '_fly' flyNum ];
 
 % navigate to data directory
 cd(directory)
@@ -30,8 +33,8 @@ for i = 1:length(fileList)
     end
 end
 
-fullFileName = [fileNamePrefix '_trial_' num2str(counter)];
-% e.g. 'BallData_161014_trial_##'
+fullFileName = [fileNamePrefix '_trial' num2str(counter)];
+% e.g. 'BallData_161014_trial#'
 
 %save your variable with the full file name
 save(fullFileName, 'ballData')

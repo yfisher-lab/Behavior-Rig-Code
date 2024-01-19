@@ -10,7 +10,11 @@
 clear all;
 
 %% Experiment Parameters
-USE_PANELS = false; %controls whether panels are used in trial (false -> off; true -> on)
+
+flyNumber = 2;
+trialDuration = 60*60; % total duration in seconds (for non-LED trials)
+
+USE_PANELS = true; %controls whether panels are used in trial (false -> off; true -> on)
 USE_LED = false; %controls whether LED are used in trial (false -> off; true -> on)
 
 % Configure panels, for closed loop mode and set up which pattern to use
@@ -19,8 +23,8 @@ USE_LED = false; %controls whether LED are used in trial (false -> off; true -> 
 % easier.... 
 %Panel_com()
 panelParams.panelModeNum = [3, 0];
-panelParams.patternNum = 1;
-panelParams.initialPosition = [0, 6];
+panelParams.patternNum = 2;
+panelParams.initialPosition = [1, 0]; %[4,6]
 
 % Configure LED flashes
 LEDParams.baselineTime = 900/1000; % initial time LED off in seconds
@@ -28,10 +32,8 @@ LEDParams.LEDonTime = 100/1000; % time LED on in seconds
 LEDParams.afterTime = 4; % time LED off in seconds
 LEDParams.REP_NUM = 12*10; % sum(LEDParams)*REP_NUM = 600 for 10 min trial;
 
-% TODO - for non LED trials
-fullTime = 10*60; % total duration in seconds
-
 %% Start FicTrac in background from current experiment directory (config file must be in directory)
+
 FT_PATH = 'C:\Users\fisherlab\Documents\GitHub\ficTrac\';
 FT_EXE_FILENAME = 'fictrac.exe';
 cmdStr = ['cd "', FT_PATH, '" ', '& start ', FT_PATH, FT_EXE_FILENAME];
@@ -47,18 +49,18 @@ cmdstring = ['cd "' Socket_PATH '" & py ' SOCKET_SCRIPT_NAME ' &'];
 [status] = system(cmdstring, '-echo');
 
 %% Run panels
+
 if(USE_PANELS == 1)
     % keep inside if statemnet
     setUpClosedLoopPanelTrial(panelParams);    
     Panel_com('start');
 end
 
-%% Recording the data!!!
+%% Set up DAQ
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 % Fictrac ball heading (0-10V)
 % Panel pattern postion (x pos)  
  
-
 %Set NI (terminal block) config
 %d = daqlist;  %see NI devices connected to computer
 %d(1, :)
@@ -72,33 +74,36 @@ addinput(dq,"Dev1", "ai2","Voltage"); %add AI third channel (ball_heading/ xPos)
 addinput(dq,"Dev1", "ai3","Voltage"); %add AI fourth channel (ball_heading/ yPos)
 addoutput(dq, "Dev1", "ao0", "Voltage"); %add AO primary channel (LED)
 
-
 dq.Channels(1).TerminalConfig = 'SingleEnded'; %save info that channel is in single ended on BOB 
 dq.Channels(2).TerminalConfig = 'SingleEnded';
 dq.Channels(3).TerminalConfig = 'SingleEnded';
 dq.Channels(4).TerminalConfig = 'SingleEnded';
 
-%% Run LED
+%% Make DAQ command array 'daqCommand'
 
-% create empty LED commmand array
-LEDcommand = [];
-
-highVoltage = 5; % V
+daqCommand = [];
+highVoltage = 5;
 dq.Rate = 1000;
-dq_rate = dq.Rate;
 
 if(USE_LED == 1)
-    % Creating LED output
-    LEDcommand = [zeros(LEDParams.baselineTime * dq.Rate , 1); highVoltage * ones(LEDParams.LEDonTime * dq.Rate, 1); zeros(LEDParams.afterTime * dq.Rate, 1)]; % LED on/off sequence matrix
-    LEDcommand = repmat(LEDcommand,[LEDParams.REP_NUM,1]);
+    daqCommand = setUpLEDCommands(LEDParams, dq, highVoltage);
 else
-    % create empty LEDcommand
-    LEDcommand = zeros(fullTime * dq.Rate, 1);
+    daqCommand = zeros(trialDuration * dq.Rate, 1);
 end
 
-% Acquire timestamped data
-data = readwrite(dq, LEDcommand);
+% if(USE_LED == 1)
+%     % Creating LED output
+%     LEDcommand = [zeros(LEDParams.baselineTime * dq.Rate , 1); highVoltage * ones(LEDParams.LEDonTime * dq.Rate, 1); zeros(LEDParams.afterTime * dq.Rate, 1)]; % LED on/off sequence matrix
+%     LEDcommand = repmat(LEDcommand,[LEDParams.REP_NUM,1]);
+% else
+%     % create empty LEDcommand
+%     LEDcommand = zeros(trialDuration * dq.Rate, 1);
+% end
 
+%% Get timestamped data from, and send commands to, DAQ.
+
+% Acquire timestamped data
+data = readwrite(dq, daqCommand);
 
 if(USE_PANELS == 1)
     % Turn panels off
@@ -114,10 +119,11 @@ ball_heading = (data.Dev1_ai1); % phidget output
 ball_xPos = (data.Dev1_ai2); % phidget output 
 ball_yPos = (data.Dev1_ai3); % phidget output 
 
-% change V to angle
-x_posRad = (x_pos) * (2 *pi) / 10;  % V to radians
+% change V to angle (radians)
+x_posRad = (x_pos) * (2*pi) / 10;  % V to radians
 ball_headingRad = (ball_heading) * (2 *pi) / 10;
 
+% change V to angle (degrees)
 x_posDeg = (x_pos) * 360 / 10;    % V to degrees
 ball_headingDeg = (ball_heading) * 360 / 10;
 
@@ -125,15 +131,19 @@ ball_xPos = (ball_xPos) * 360 / 10;
 ball_yPos = (ball_yPos) * 360 / 10;
 
 % create larger struct for all data and recording conditions
-ballData.data = data;
+%ballData.data = data;
+ballData.data.DAC0 = data.Dev1_ai0;
+ballData.data.PhidgetCh0 = data.Dev1_ai1;
+ballData.data.PhidgetCh1 = data.Dev1_ai2;
+ballData.data.PhidgetCh2 = data.Dev1_ai3;
 ballData.data.x_posDeg = x_posDeg;
 ballData.data.ballHeadingDeg = ball_headingDeg;
 ballData.data.ballxPosDeg = ball_xPos;
 ballData.data.ballyPosDeg = ball_yPos;
 ballData.data.x_posRad = x_posRad;
 ballData.data.ballHeadingRad = ball_headingRad;
-ballData.dqRate = dq_rate;
-ballData.data.LEDcommand = LEDcommand;
+ballData.dqRate = dq.Rate;
+ballData.data.daqCommand = daqCommand;
 
 if(USE_PANELS == 1)
     ballData.panelParams = panelParams;
@@ -143,20 +153,8 @@ if(USE_LED == 1)
     ballData.LEDParams = LEDParams;
 end
 
-% Save data  
-%saveData ('C:\Users\fisherlab\Dropbox\Data\Menotaxis-MATC',ballData, 'Menotaxis_');
-saveData('C:\Users\fisherlab\Dropbox\Data\TLN\Menotaxis',ballData, 'Menotaxis_');
-%saveData ('C:\Users\fisherlab\Dropbox\Data\EPG_SPARC_JC',ballData, 'EPG_SPARC_');
+saveData('C:\Users\fisherlab\Documents\AJH-arena-data', ballData, 'Menotaxis', flyNumber);
 
-
-
-
-
-
-
-
-
-
-
-
-
+% saveData ('C:\Users\fisherlab\Dropbox\Data\Menotaxis-MATC',ballData, 'Menotaxis_');
+% saveData('C:\Users\fisherlab\Dropbox\Data\TLN\Menotaxis',ballData, 'Menotaxis_');
+% saveData ('C:\Users\fisherlab\Dropbox\Data\EPG_SPARC_JC',ballData, 'EPG_SPARC_');
