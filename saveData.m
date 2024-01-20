@@ -16,7 +16,7 @@ function [] = saveData( directory , ballData, expName, flyNumberIn)
 % make date number string
 format = 'yymmdd';  %YYMMDD format
 flyNum = num2str(flyNumberIn);
-fileNamePrefix = [ expName '_' datestr(now, format) '_fly' flyNum ];
+fileNamePrefix = [ datestr(now, format) '_' expName '_fly' flyNum ];
 
 % navigate to data directory
 cd(directory)

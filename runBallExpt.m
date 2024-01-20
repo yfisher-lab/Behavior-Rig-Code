@@ -11,8 +11,9 @@ clear all;
 
 %% Experiment Parameters
 
-flyNumber = 2;
-trialDuration = 60*60; % total duration in seconds (for non-LED trials)
+exptName = 'TestingSave';
+flyNumber = 1;
+trialDuration = 15; % total duration in seconds (for non-LED trials)
 
 USE_PANELS = true; %controls whether panels are used in trial (false -> off; true -> on)
 USE_LED = false; %controls whether LED are used in trial (false -> off; true -> on)
@@ -103,6 +104,10 @@ end
 %% Get timestamped data from, and send commands to, DAQ.
 
 % Acquire timestamped data
+timeOfExpt = now;
+timeOfExpt = datetime(timeOfExpt, 'ConvertFrom', 'datenum');
+disp(timeOfExpt);
+
 data = readwrite(dq, daqCommand);
 
 if(USE_PANELS == 1)
@@ -121,6 +126,7 @@ ballData.data.PhidgetCh2 = data.Dev1_ai3;
 ballData.data.daqCommand = daqCommand;
 
 ballData.dqRate = dq.Rate;
+ballData.timeOfExpt = timeOfExpt;
 
 if(USE_PANELS == 1)
     ballData.panelParams = panelParams;
@@ -155,7 +161,7 @@ ballData.data.ballYPos = ball_yPos;
 
 
 saveData('C:\Users\fisherlab\Documents\AJH-arena-data',...
-            ballData, '1hrClosedLoop', flyNumber);
+            ballData, exptName, flyNumber);
 
 
 %%
