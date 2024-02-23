@@ -7,13 +7,20 @@
 %
 % Yvette Fisher 12/2021
 %
-clear all;
+clear all; close all;
 
 %% Experiment Parameters
 
-exptName = 'TestingSave';
-flyNumber = 1;
-trialDuration = 15; % total duration in seconds (for non-LED trials)
+exptName = '30mClosedLoop'; %Pre-trial %30mClosedLoop %1hrClosedLoop
+trialDuration = 30*60; % total duration in seconds (for non-LED trials)
+flyNumber = 2; 
+flyNotes = ...
+    ["7-d-old female, WT [isoD1]. Female-housed since 1-d-old.";...
+     "Solo housed in vial w/ moist Kim-wipe for ~48h.";...
+     "Mounted on wire 1:45. Loaded onto ball 1:.";...
+     "Displayed controlled forward walk before start of trial.";...
+     "Original ball. Airflow at 300."];
+
 
 USE_PANELS = true; %controls whether panels are used in trial (false -> off; true -> on)
 USE_LED = false; %controls whether LED are used in trial (false -> off; true -> on)
@@ -25,7 +32,7 @@ USE_LED = false; %controls whether LED are used in trial (false -> off; true -> 
 %Panel_com()
 panelParams.panelModeNum = [3, 0];
 panelParams.patternNum = 2;
-panelParams.initialPosition = [1, 0]; %[4,6]
+panelParams.initialPosition = [48, 0]; %[4,6]
 
 % Configure LED flashes
 LEDParams.baselineTime = 900/1000; % initial time LED off in seconds
@@ -127,6 +134,7 @@ ballData.data.daqCommand = daqCommand;
 
 ballData.dqRate = dq.Rate;
 ballData.timeOfExpt = timeOfExpt;
+ballData.notes = flyNotes;
 
 if(USE_PANELS == 1)
     ballData.panelParams = panelParams;
