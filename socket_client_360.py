@@ -115,6 +115,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
             # *********** CONVERT TO VOLTAGE SIGNALS ***********
             # Set analog output voltage YAW
             output_voltage_yaw = (heading) * 10. / (2 * np.pi)
+            output_voltage_yaw = ((output_voltage_yaw-10)*-1)
             # output_voltage_yaw = clamp(output_voltage_yaw, aout_min_volt, aout_max_volt)
             aout_yaw.setVoltage(output_voltage_yaw)
 
