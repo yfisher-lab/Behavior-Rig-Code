@@ -147,8 +147,8 @@ end
 % Store ball heading and panel position values in mV
 bar_xPos = (data.Dev1_ai0); % DAC0 output from controller gives bar x-pos
 ball_heading = (data.Dev1_ai1); % phidget output Ch0 [yaw]
-ball_xPos = (data.Dev1_ai2); % phidget output Ch1 [roll]
-ball_yPos = (data.Dev1_ai3); % phidget output Ch2 [pitch]
+ball_xPos = (data.Dev1_ai2); % phidget output Ch1 [x-pos/pitch]
+ball_yPos = (data.Dev1_ai3); % phidget output Ch2 [y-pos/roll]
 
 % Change V to angle (degrees)
 bar_xPos = (bar_xPos) * 360 / 10; % V to degrees
