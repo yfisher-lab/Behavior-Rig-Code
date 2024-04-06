@@ -15,11 +15,12 @@ exptName = '30mClosedLoop'; %Pre-trial %30mClosedLoop %1hrClosedLoop
 trialDuration = 30*60; % total duration in seconds (for non-LED trials)
 flyNumber = 2; 
 flyNotes = ...
-    ["7-d-old female, WT [isoD1]. Female-housed since 1-d-old.";...
+    ["5-d-old female R4d-kir2.1. Moved to female-only vial at 1d";...
      "Solo housed in vial w/ moist Kim-wipe for ~48h.";...
-     "Mounted on wire 1:45. Loaded onto ball 1:.";...
+     "New mounting strategy (sarcophagus flipped, forceps, no brush).";...
+     "Mounted on wire ~15:00. Loaded onto ball ~15:15.";...
      "Displayed controlled forward walk before start of trial.";...
-     "Original ball. Airflow at 300."];
+     "Original ball. Airflow @300."];
 
 
 USE_PANELS = true; %controls whether panels are used in trial (false -> off; true -> on)
@@ -35,10 +36,10 @@ panelParams.patternNum = 2;
 panelParams.initialPosition = [48, 0]; %[4,6]
 
 % Configure LED flashes
-LEDParams.baselineTime = 900/1000; % initial time LED off in seconds
-LEDParams.LEDonTime = 100/1000; % time LED on in seconds
-LEDParams.afterTime = 4; % time LED off in seconds
-LEDParams.REP_NUM = 12*10; % sum(LEDParams)*REP_NUM = 600 for 10 min trial;
+LEDParams.baselineTime = 0; % initial time LED off in seconds
+LEDParams.LEDonTime = 0.1; % time LED on in seconds
+LEDParams.afterTime = 0.1; % time LED off in seconds
+LEDParams.REP_NUM = 10000; % sum(LEDParams)*REP_NUM = 600 for 10 min trial;
 
 %% Start FicTrac in background from current experiment directory (config file must be in directory)
 
@@ -53,7 +54,7 @@ pause(4);
 Socket_PATH = 'C:\Users\fisherlab\Documents\GitHub\Behavior-Rig-Code\';
 SOCKET_SCRIPT_NAME = 'socket_client_360.py';
 %cmdstring = ['cd "' Socket_PATH '" & python ' SOCKET_SCRIPT_NAME ' &'];
-cmdstring = ['cd "' Socket_PATH '" & py ' SOCKET_SCRIPT_NAME ' &'];
+cmdstring = ['cd "' Socket_PATH '" & py -3.10 ' SOCKET_SCRIPT_NAME ' &'];
 [status] = system(cmdstring, '-echo');
 
 %% Run panels
@@ -167,9 +168,10 @@ ballData.data.ballYPos = ball_yPos;
 % ballData.data.barXPos_rad = bar_xPosRad;
 % ballData.data.ballHeading_rad = ball_headingRad;
 
+ballData.data4python = table2array(ballData.data);
 
 saveData('C:\Users\fisherlab\Documents\AJH-arena-data',...
-            ballData, exptName, flyNumber);
+             ballData, exptName, flyNumber);
 
 
 %%
