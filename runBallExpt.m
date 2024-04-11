@@ -12,18 +12,21 @@ clear all; close all;
 %% Experiment Parameters
 
 exptName = '30mClosedLoop'; %Pre-trial %30mClosedLoop %1hrClosedLoop
-trialDuration = 30*60; % total duration in seconds (for non-LED trials)
-flyNumber = 2; 
-flyNotes = ...
-    ["5-d-old female R4d-kir2.1. Moved to female-only vial at 1d";...
-     "Solo housed in vial w/ moist Kim-wipe for ~48h.";...
-     "New mounting strategy (sarcophagus flipped, forceps, no brush).";...
-     "Mounted on wire ~15:00. Loaded onto ball ~15:15.";...
-     "Displayed controlled forward walk before start of trial.";...
-     "Original ball. Airflow @300."];
+trialDuration = 10*60; % total duration in seconds (for non-LED trials)
+flyNumber = 1; 
+% flyNotes = ...
+%     ["5-d-old female R4d-kir2.1. Moved to female-only vial at 1d";...
+%      "Solo housed in vial w/ moist Kim-wipe for ~48h.";...
+%      "New mounting strategy (sarcophagus flipped, forceps, no brush).";...
+%      "Mounted on wire ~15:00. Loaded onto ball ~15:15.";...
+%      "Displayed controlled forward walk before start of trial.";...
+%      "Original ball. Airflow @300."];
+flyNotes = ["Testing laser w/ data collection."];
 
+daqRate = 10000; % Hz
 
 USE_PANELS = true; %controls whether panels are used in trial (false -> off; true -> on)
+USE_LASER = true; %controls whether 808nm laser is used in tria (true = on)
 USE_LED = false; %controls whether LED are used in trial (false -> off; true -> on)
 
 % Configure panels, for closed loop mode and set up which pattern to use
@@ -35,11 +38,18 @@ panelParams.panelModeNum = [3, 0];
 panelParams.patternNum = 2;
 panelParams.initialPosition = [48, 0]; %[4,6]
 
+% Configure 808nm laser pulse width modulation settings:
+laserParams.freq = 100; % Hz
+laserParams.dutyCyc = 2; % percent, time(on)/(time(on)+time(off))
+laserParams.delay = 30; % seconds
+laserParams.dur = trialDuration - laserParams.delay; % seconds
+
 % Configure LED flashes
 LEDParams.baselineTime = 0; % initial time LED off in seconds
 LEDParams.LEDonTime = 0.1; % time LED on in seconds
 LEDParams.afterTime = 0.1; % time LED off in seconds
 LEDParams.REP_NUM = 10000; % sum(LEDParams)*REP_NUM = 600 for 10 min trial;
+
 
 %% Start FicTrac in background from current experiment directory (config file must be in directory)
 
@@ -77,25 +87,34 @@ end
 
 % Setup data acquisition session (daq)
 dq = daq("ni"); %create data acquisition object
+dq.Rate = daqRate;
 addinput(dq,"Dev1", "ai0","Voltage"); % add analog input(AI) primary channel (xpos)
 addinput(dq,"Dev1", "ai1","Voltage"); %add AI secondary channel (ball_heading/ yaw)
 addinput(dq,"Dev1", "ai2","Voltage"); %add AI third channel (ball_heading/ xPos)
 addinput(dq,"Dev1", "ai3","Voltage"); %add AI fourth channel (ball_heading/ yPos)
-addoutput(dq, "Dev1", "ao0", "Voltage"); %add AO primary channel (LED)
+
+%addoutput(dq, "Dev1", "ao0", "Voltage"); %add AO primary channel (LED)
+
+if USE_LASER == 1
+    addoutput(dq, "Dev1", "port0/line0", 'Digital');
+    write(dq, 0);
+end
 
 dq.Channels(1).TerminalConfig = 'SingleEnded'; %save info that channel is in single ended on BOB 
 dq.Channels(2).TerminalConfig = 'SingleEnded';
 dq.Channels(3).TerminalConfig = 'SingleEnded';
 dq.Channels(4).TerminalConfig = 'SingleEnded';
 
+
+
 %% Make DAQ command array 'daqCommand'
 
-daqCommand = [];
 highVoltage = 5;
-dq.Rate = 1000;
 
-if(USE_LED == 1)
+if USE_LED == 1
     daqCommand = setUpLEDCommands(LEDParams, dq, highVoltage);
+elseif USE_LASER == 1
+    daqCommand = setUpLaserCommands(laserParams, dq);
 else
     daqCommand = zeros(trialDuration * dq.Rate, 1);
 end
@@ -139,6 +158,10 @@ ballData.notes = flyNotes;
 
 if(USE_PANELS == 1)
     ballData.panelParams = panelParams;
+end
+
+if(USE_LASER == 1)
+    ballData.laserParams = laserParams;
 end
 
 if(USE_LED == 1)
