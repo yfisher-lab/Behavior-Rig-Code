@@ -11,19 +11,22 @@ clear all; close all;
 
 %% Experiment Parameters
 
-exptName = '30mClosedLoop'; %Pre-trial %30mClosedLoop %1hrClosedLoop
-trialDuration = 10*60; % total duration in seconds (for non-LED trials)
+exptName = 'TEST_Dorra'; %Pre-trial %30mClosedLoop %1hrClosedLoop
+trialDuration = 1*60; % total duration in seconds (for non-LED trials)
 flyNumber = 1; 
 % flyNotes = ...
-%     ["5-d-old female R4d-kir2.1. Moved to female-only vial at 1d";...
+%     ["8-d-old female wt. Moved to female-only vial at 1d";...
 %      "Solo housed in vial w/ moist Kim-wipe for ~48h.";...
 %      "New mounting strategy (sarcophagus flipped, forceps, no brush).";...
-%      "Mounted on wire ~15:00. Loaded onto ball ~15:15.";...
+%      "Mounted on wire ~17:45. Loaded onto ball ~18:00.";...
 %      "Displayed controlled forward walk before start of trial.";...
 %      "Original ball. Airflow @300."];
 flyNotes = ["Testing laser w/ data collection."];
 
 daqRate = 10000; % Hz
+
+% IMPORTANT: this script currently won't work with LED and laser both set
+% to 'true.'
 
 USE_PANELS = true; %controls whether panels are used in trial (false -> off; true -> on)
 USE_LASER = true; %controls whether 808nm laser is used in tria (true = on)
@@ -40,8 +43,8 @@ panelParams.initialPosition = [48, 0]; %[4,6]
 
 % Configure 808nm laser pulse width modulation settings:
 laserParams.freq = 100; % Hz
-laserParams.dutyCyc = 2; % percent, time(on)/(time(on)+time(off))
-laserParams.delay = 30; % seconds
+laserParams.dutyCyc = 10; % percent, time(on)/(time(on)+time(off))
+laserParams.delay = 10; % seconds
 laserParams.dur = trialDuration - laserParams.delay; % seconds
 
 % Configure LED flashes
@@ -67,6 +70,7 @@ SOCKET_SCRIPT_NAME = 'socket_client_360.py';
 cmdstring = ['cd "' Socket_PATH '" & py -3.10 ' SOCKET_SCRIPT_NAME ' &'];
 [status] = system(cmdstring, '-echo');
 
+
 %% Run panels
 
 if(USE_PANELS == 1)
@@ -74,6 +78,7 @@ if(USE_PANELS == 1)
     setUpClosedLoopPanelTrial(panelParams);    
     Panel_com('start');
 end
+
 
 %% Set up DAQ
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
@@ -106,15 +111,14 @@ dq.Channels(3).TerminalConfig = 'SingleEnded';
 dq.Channels(4).TerminalConfig = 'SingleEnded';
 
 
-
-%% Make DAQ command array 'daqCommand'
+%% Make DAQ command array 'daqCommand.'
 
 highVoltage = 5;
 
-if USE_LED == 1
-    daqCommand = setUpLEDCommands(LEDParams, dq, highVoltage);
-elseif USE_LASER == 1
+if USE_LASER == 1
     daqCommand = setUpLaserCommands(laserParams, dq);
+elseif USE_LED == 1
+    daqCommand = setUpLEDCommands(LEDParams, dq, highVoltage);
 else
     daqCommand = zeros(trialDuration * dq.Rate, 1);
 end
@@ -137,11 +141,20 @@ disp(timeOfExpt);
 
 data = readwrite(dq, daqCommand);
 
+
+%% Shut down stuff.
+
 if(USE_PANELS == 1)
     % Turn panels off
     Panel_com('stop');
     Panel_com('all_off'); % LEDs panel off
 end
+
+if USE_LASER == 1
+    write(dq, 0);
+    disp('Laser output [0]: Laser at lowest power.');
+end
+
 
 %% Save Data
 
