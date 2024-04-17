@@ -158,12 +158,41 @@ end
 
 %% Save Data
 
-ballData.data = data;
-ballData.data.DAC0 = data.Dev1_ai0;
-ballData.data.PhidgetCh0 = data.Dev1_ai1;
-ballData.data.PhidgetCh1 = data.Dev1_ai2;
-ballData.data.PhidgetCh2 = data.Dev1_ai3;
+DOWNSAMPLE_TO = 50; % hz
+
+q = dq.Rate / DOWNSAMPLE_TO;
+
+ballData.data = resample(data, 1, q);
+
+ballData.data.Properties.VariableNames(1) = {'DAC0'};
+ballData.data.Properties.VariableNames(2) = {'PhidgetCh0'};
+ballData.data.Properties.VariableNames(3) = {'PhidgetCh1'};
+ballData.data.Properties.VariableNames(4) = {'PhidgetCh2'};
+
 ballData.data.daqCommand = daqCommand;
+
+% ballData.data = data;
+% ballData.data.DAC0 = data.Dev1_ai0;
+% ballData.data.PhidgetCh0 = data.Dev1_ai1;
+% ballData.data.PhidgetCh1 = data.Dev1_ai2;
+% ballData.data.PhidgetCh2 = data.Dev1_ai3;
+
+% % Store ball heading and panel position values in mV
+% bar_xPos = (data.Dev1_ai0); % DAC0 output from controller gives bar x-pos
+% ball_heading = (data.Dev1_ai1); % phidget output Ch0 [yaw]
+% ball_xPos = (data.Dev1_ai2); % phidget output Ch1 [x-pos/pitch]
+% ball_yPos = (data.Dev1_ai3); % phidget output Ch2 [y-pos/roll]
+% 
+% % Change V to angle (degrees)
+% bar_xPos = (bar_xPos) * 360 / 10; % V to degrees
+% ball_headingDeg = (ball_heading) * 360 / 10;
+% ball_xPos = (ball_xPos) * 360 / 10;
+% ball_yPos = (ball_yPos) * 360 / 10;
+% 
+% ballData.data.barXPos = bar_xPos;
+% ballData.data.ballHeading = ball_headingDeg;
+% ballData.data.ballXPos = ball_xPos;
+% ballData.data.ballYPos = ball_yPos;
 
 ballData.dqRate = dq.Rate;
 ballData.timeOfExpt = timeOfExpt;
@@ -180,29 +209,6 @@ end
 if(USE_LED == 1)
     ballData.LEDParams = LEDParams;
 end
-
-% Store ball heading and panel position values in mV
-bar_xPos = (data.Dev1_ai0); % DAC0 output from controller gives bar x-pos
-ball_heading = (data.Dev1_ai1); % phidget output Ch0 [yaw]
-ball_xPos = (data.Dev1_ai2); % phidget output Ch1 [x-pos/pitch]
-ball_yPos = (data.Dev1_ai3); % phidget output Ch2 [y-pos/roll]
-
-% Change V to angle (degrees)
-bar_xPos = (bar_xPos) * 360 / 10; % V to degrees
-ball_headingDeg = (ball_heading) * 360 / 10;
-ball_xPos = (ball_xPos) * 360 / 10;
-ball_yPos = (ball_yPos) * 360 / 10;
-
-ballData.data.barXPos = bar_xPos;
-ballData.data.ballHeading = ball_headingDeg;
-ballData.data.ballXPos = ball_xPos;
-ballData.data.ballYPos = ball_yPos;
-
-% % Change V to angle (radians)
-% bar_xPosRad = (bar_xPos) * (2*pi) / 10;  % V to radians
-% ball_headingRad = (ball_heading) * (2 *pi) / 10;
-% ballData.data.barXPos_rad = bar_xPosRad;
-% ballData.data.ballHeading_rad = ball_headingRad;
 
 ballData.data4python = table2array(ballData.data);
 
