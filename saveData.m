@@ -3,7 +3,7 @@ function [] = saveData( directory , ballData, expName, flyNumberIn)
 % INPUT
 %       directory - location where the data should be saved
 %       ballData - data to be saved in that location
-%       expName - experiment name/ type, e.g. 'Menotaxis'
+%       expName - experiment name/ type, e.g. 'Menotaxis'/'30mClosedLoop'
 %       flyNumberIn - fly ID (for multiple trials w/ same fly on the same day)
 %
 % The data will be saved as %'BallData_YYMMDD_trial_##'
@@ -13,10 +13,13 @@ function [] = saveData( directory , ballData, expName, flyNumberIn)
 % Yvette Fisher and Jessica Co 2/2022
 % Andrew added 'flyNumber' modifications 1/2024
 
+% Set the folder to cd to after saving.
+MAIN_DIR = '/Users/fisherlab/Documents/GitHub/Behavior-Rig-Code/';
+
 % make date number string
 format = 'yymmdd';  %YYMMDD format
 flyNum = num2str(flyNumberIn);
-fileNamePrefix = [ datestr(now, format) '_' expName '_fly' flyNum ];
+fileNamePrefix = [ datestr(now, format) '_fly' flyNum ];
 
 % navigate to data directory
 cd(directory)
@@ -33,10 +36,11 @@ for i = 1:length(fileList)
     end
 end
 
-fullFileName = [fileNamePrefix '_trial' num2str(counter)];
-% e.g. 'BallData_161014_trial#'
+fullFileName = [fileNamePrefix '_trial' num2str(counter) '_' expName];
 
 %save your variable with the full file name
 save(fullFileName, 'ballData')
+
+cd(MAIN_DIR)
 
 end
