@@ -11,26 +11,51 @@ clear all; close all;
 
 %% Experiment Parameters
 
-exptName = '15mClosedLoop'; % e.g., 30mClosedLoop 1hrClosedLoop
-trialDuration = 30*60; % total duration in seconds (for non-LED trials)
-flyNumber = 2; 
-flyNotes = ...
-    ["Laser off.";...
-     "8-d-old female WT, housed in female-only vial since 1d.";...
-     "Solo housed in vial w/ moist Kim-wipe for ~24h."];
-%     ["8-d-old female wt. Moved to female-only vial at 1d";...
-%      "Solo housed in vial w/ moist Kim-wipe for ~48h.";...
-%      "New mounting strategy (sarcophagus flipped, forceps, no brush).";...
-%      "Mounted on wire ~17:45. Loaded onto ball ~18:00.";...
-%      "Displayed controlled forward walk before start of trial.";...
-%      "Original ball. Airflow @300."];
+exptName = '20mClosedLoop'; % e.g., 30mClosedLoop 1hrClosedLoop
+trialDuration = 20*60; % total duration in seconds (for non-LED trials)
+flyNumber = 1;
+flyGenotype = '+;+;+ (isoD1)';
+trialType = 1;
+
+if trialType == 1
+    USE_PANELS = true;
+    USE_LASER = false;
+    USE_LED = false; % Code currently won't work w/ LED & LASER both set to 'true'.
+    
+    flyNotes = ...
+        ["Panels on, laser off.";...
+         "6-d-old female, housed in female-only vial since 1d.";...
+         "Solo housed in vial w/ moist Kim-wipe for ~24h."];
+    %     ["8-d-old female wt. Moved to female-only vial at 1d";...
+    %      "Solo housed in vial w/ moist Kim-wipe for ~48h.";...
+    %      "New mounting strategy (sarcophagus flipped, forceps, no brush).";...
+    %      "Mounted on wire ~17:45. Loaded onto ball ~18:00.";...
+    %      "Displayed controlled forward walk before start of trial.";...
+    %      "Original ball. Airflow @300."];
+
+elseif trialType == 2
+    USE_PANELS = true;
+    USE_LASER = true;
+    USE_LED = false; % Code currently won't work w/ LED & LASER both set to 'true'.
+    
+    flyNotes = ...
+        ["Panels on, laser on at 1% dutyCycle.";...
+         "6-d-old female, housed in female-only vial since 1d.";...
+         "Solo housed in vial w/ moist Kim-wipe for ~24h."];
+
+elseif trialType == 3
+    USE_PANELS = false;
+    USE_LASER = true;
+    USE_LED = false;
+
+    flyNotes = ...
+        ["Panels off, laser on at 1% dutyCycle.";...
+         "6-d-old female, housed in female-only vial since 1d.";...
+         "Solo housed in vial w/ moist Kim-wipe for ~24h."];
+end
+
 
 daqRate = 20000; % Hz
-
-% IMPORTANT: code won't work with LED and laser both set to 'true.'
-USE_PANELS = true; % controls whether panels are used in trial (true = on)
-USE_LASER = true; % controls whether 808nm laser is used in trial (true = on)
-USE_LED = false; % controls whether LEDs are used in trial (true = on)
 
 % Configure panels, for closed loop mode and set up which pattern to use
 % and set up external tiggering if you want things to
@@ -42,8 +67,8 @@ panelParams.initialPosition = [48, 0]; %[4,6]
 
 % Configure 808nm laser pulse width modulation settings:
 laserParams.freq = 200; % Hz
-laserParams.dutyCyc = 2; % percent, time(on)/(time(on)+time(off))
-laserParams.delay = 15*60; % seconds
+laserParams.dutyCyc = 1; % percent, time(on)/(time(on)+time(off))
+laserParams.delay = 0; % seconds
 laserParams.dur = trialDuration - laserParams.delay; % seconds
 
 % Configure LED flashes
@@ -113,7 +138,7 @@ dq.Channels(4).TerminalConfig = 'SingleEnded';
 %% Make DAQ command array 'daqCommand.'
 
 if USE_LASER == 1
-    daqCommand = setUpLaserCommands(laserParams, dq);
+    daqCommand = setUpLaserCommands(laserParams, dq.Rate);
 elseif USE_LED == 1
     daqCommand = setUpLEDCommands(LEDParams, dq);
 else
@@ -167,12 +192,13 @@ ballData.data.Properties.VariableNames(2) = {'PhidgetCh0'};
 ballData.data.Properties.VariableNames(3) = {'PhidgetCh1'};
 ballData.data.Properties.VariableNames(4) = {'PhidgetCh2'};
 
-ballData.data4python = table2array(ballData.data);
+%ballData.data4python = table2array(ballData.data);
 
 [ballData.ficTracLog, ballData.ficTFilename] = getLatestFicTracLog();
 
 ballData.dqRate = dq.Rate;
 ballData.timeOfExpt = timeOfExpt;
+ballData.flyGenotype = flyGenotype;
 ballData.notes = flyNotes;
 
 if(USE_PANELS == 1)
@@ -187,37 +213,12 @@ if(USE_LED == 1)
     ballData.LEDParams = LEDParams;
 end
 
-% ballData.data = data;
-% ballData.data.DAC0 = data.Dev1_ai0;
-% ballData.data.PhidgetCh0 = data.Dev1_ai1;
-% ballData.data.PhidgetCh1 = data.Dev1_ai2;
-% ballData.data.PhidgetCh2 = data.Dev1_ai3;
-%
-% % Store ball heading and panel position values in mV
-% bar_xPos = (data.Dev1_ai0); % DAC0 output from controller gives bar x-pos
-% ball_heading = (data.Dev1_ai1); % phidget output Ch0 [yaw]
-% ball_xPos = (data.Dev1_ai2); % phidget output Ch1 [x-pos/pitch]
-% ball_yPos = (data.Dev1_ai3); % phidget output Ch2 [y-pos/roll]
-% 
-% % Change V to angle (degrees)
-% bar_xPos = (bar_xPos) * 360 / 10; % V to degrees
-% ball_headingDeg = (ball_heading) * 360 / 10;
-% ball_xPos = (ball_xPos) * 360 / 10;
-% ball_yPos = (ball_yPos) * 360 / 10;
-% 
-% ballData.data.barXPos = bar_xPos;
-% ballData.data.ballHeading = ball_headingDeg;
-% ballData.data.ballXPos = ball_xPos;
-% ballData.data.ballYPos = ball_yPos;
-
-ballData.dqRate = dq.Rate;
-ballData.timeOfExpt = timeOfExpt;
-ballData.notes = flyNotes;
 
 F = whos('ballData');
 if F.bytes > 2000000000
+    disp("ballData too large to save (>2GB)... Downsampling...");
     ballData.data = downsampleBallData(ballData.data, dq.Rate, 10000);
-    ballData.data4python = table2array(ballData.data);
+    %ballData.data4python = table2array(ballData.data);
     ballData.downSampledRate = 10000;
 end
 
@@ -226,3 +227,8 @@ saveData('C:\Users\fisherlab\Documents\AJH-arena-data',...
 
 disp('Done!');
 
+
+%%
+
+figure; plot(ballData.ficTracLog.Var15, ballData.ficTracLog.Var16);
+axis equal

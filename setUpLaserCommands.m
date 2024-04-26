@@ -1,10 +1,10 @@
-function [laserCmdsOut] = setUpLaserCommands(params, dq)
+function [laserCmdsOut] = setUpLaserCommands(params, dqRate)
 
 % Every cycle occupies this many bins in command output.
-cycleBins = (1/params.freq) * dq.Rate;
+cycleBins = (1/params.freq) * dqRate;
 
 % Calculate number of times to repeat pulse seq based on duration of expt.
-numReps = round((params.dur * dq.Rate) / cycleBins);
+numReps = round((params.dur * dqRate) / cycleBins);
 
 % Calculate number of bins dedicated to 'on' (1) and 'off' (0).
 pulseOnBins = floor(cycleBins * (params.dutyCyc/100));
@@ -24,7 +24,7 @@ else
 end
 
 % Create final command output matrix (delay + repeated pulseCmds mat).
-laserCmdsOut = [zeros(params.delay * dq.Rate, 1);...
+laserCmdsOut = [zeros(params.delay * dqRate, 1);...
               repmat(pulseCmds, [numReps,1])];
 
 end
