@@ -13,49 +13,35 @@ clear all; close all;
 
 exptName = '20mClosedLoop'; % e.g., 30mClosedLoop 1hrClosedLoop
 trialDuration = 20*60; % total duration in seconds (for non-LED trials)
-flyNumber = 1;
-flyGenotype = '+;+;+ (isoD1)';
-trialType = 1;
+flyNumber = 2;
+flyGenotype = '+; +; UAS-Kir2.1/+';
+%flyGenotype = 'w+/; EPG-AD/+; EPG-DBD/+ (SS00096)';
+%flyGenotype = 'w+/; EPG-AD/+; EPG-DBD/UAS-Kir2.1 (SS00096)';
+flyNotes = ...
+    ["Female, unknown age (5- or 6-d-old).";...
+     "Housed in female-only vial since 6/21/24.";...
+     "Solo housed in vial w/ moist Kim-wipe for ~24h."];
+
+trialType = 2;
 
 if trialType == 1
     USE_PANELS = true;
     USE_LASER = false;
     USE_LED = false; % Code currently won't work w/ LED & LASER both set to 'true'.
-    
-    flyNotes = ...
-        ["Panels on, laser off.";...
-         "6-d-old female, housed in female-only vial since 1d.";...
-         "Solo housed in vial w/ moist Kim-wipe for ~24h."];
-    %     ["8-d-old female wt. Moved to female-only vial at 1d";...
-    %      "Solo housed in vial w/ moist Kim-wipe for ~48h.";...
-    %      "New mounting strategy (sarcophagus flipped, forceps, no brush).";...
-    %      "Mounted on wire ~17:45. Loaded onto ball ~18:00.";...
-    %      "Displayed controlled forward walk before start of trial.";...
-    %      "Original ball. Airflow @300."];
 
 elseif trialType == 2
     USE_PANELS = true;
     USE_LASER = true;
     USE_LED = false; % Code currently won't work w/ LED & LASER both set to 'true'.
-    
-    flyNotes = ...
-        ["Panels on, laser on at 1% dutyCycle.";...
-         "6-d-old female, housed in female-only vial since 1d.";...
-         "Solo housed in vial w/ moist Kim-wipe for ~24h."];
 
 elseif trialType == 3
     USE_PANELS = false;
     USE_LASER = true;
     USE_LED = false;
 
-    flyNotes = ...
-        ["Panels off, laser on at 1% dutyCycle.";...
-         "6-d-old female, housed in female-only vial since 1d.";...
-         "Solo housed in vial w/ moist Kim-wipe for ~24h."];
 end
 
-
-daqRate = 20000; % Hz
+daqRate = 10000; % Hz
 
 % Configure panels, for closed loop mode and set up which pattern to use
 % and set up external tiggering if you want things to
@@ -63,12 +49,12 @@ daqRate = 20000; % Hz
 % easier.... 
 panelParams.panelModeNum = [3, 0];
 panelParams.patternNum = 2;
-panelParams.initialPosition = [48, 0]; %[4,6]
+panelParams.initialPosition = [44, 0]; %[4, 6] [44, 2]
 
-% Configure 808nm laser pulse width modulation settings:
+% Configure 850nm laser pulse width modulation settings:
 laserParams.freq = 200; % Hz
-laserParams.dutyCyc = 1; % percent, time(on)/(time(on)+time(off))
-laserParams.delay = 0; % seconds
+laserParams.dutyCyc = 12; % percent, time(on)/(time(on)+time(off))
+laserParams.delay = 1*60; % seconds
 laserParams.dur = trialDuration - laserParams.delay; % seconds
 
 % Configure LED flashes
@@ -124,7 +110,7 @@ addinput(dq,"Dev1", "ai3","Voltage"); %add AI fourth channel (ball_heading/ yPos
 
 if USE_LASER == 1
     addoutput(dq, "Dev1", "port0/line0", 'Digital');
-    write(dq, 0);
+    write(dq, 1);
 else
     addoutput(dq, "Dev1", "ao0", "Voltage");
 end
@@ -173,8 +159,8 @@ if(USE_PANELS == 1)
 end
 
 if USE_LASER == 1
-    write(dq, 0);
-    disp('Laser output [0]: Laser at lowest power.');
+    write(dq, 1);
+    disp('Laser output [1]: Laser off.');
 end
 
 system('Taskkill/IM cmd.exe'); system('Taskkill /F /IM fictrac.exe');
