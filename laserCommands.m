@@ -27,8 +27,8 @@ disp('Sending [1]: Laser off.');
 
 % Pulse-width modulation parameters.
 params.freq = 200; % Hz
-params.dutyCyc = 4; % percent, time(on)/(time(on)+time(off))
-params.dur = 500; % seconds
+params.dutyCyc = 2; % percent, time(on)/(time(on)+time(off))
+params.dur = 60; % seconds
 params.delay = 0; % seconds
 
 digCmdsOut = setUpLaserCommands(params, dq.Rate);

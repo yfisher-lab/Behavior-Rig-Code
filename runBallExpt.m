@@ -11,33 +11,48 @@ clear all; close all;
 
 %% Experiment Parameters
 
-exptName = '20mClosedLoop'; % e.g., 30mClosedLoop 1hrClosedLoop
-trialDuration = 20*60; % total duration in seconds (for non-LED trials)
-flyNumber = 2;
-flyGenotype = '+; +; UAS-Kir2.1/+';
+exptName = '30mBrightBar-wLED-100msQ30s-PanelsOFF'; % e.g., 30mClosedLoop 1hrClosedLoop
+trialDuration = 30*60; % total duration in seconds (for non-LED trials)
+flyNumber = 4;
+%flyGenotype = 'w+; +; + (isoD1)';
+flyGenotype = 'ExR6 > CsChrimson';
+%flyGenotype = '+; +; UAS-Kir2.1/+';
 %flyGenotype = 'w+/; EPG-AD/+; EPG-DBD/+ (SS00096)';
 %flyGenotype = 'w+/; EPG-AD/+; EPG-DBD/UAS-Kir2.1 (SS00096)';
+%flyGenotype = 'w+/; EL-AD/UAS-TBH-RNAi; EL-DBD/+ (67968)';
+%flyGenotype = 'w+/; UAS-TBH-RNAi/+; + (67968)';
+%flyGenotype = 'w+/; EL-AD/+; EL-DBD/+';
 flyNotes = ...
-    ["Female, unknown age (5- or 6-d-old).";...
-     "Housed in female-only vial since 6/21/24.";...
-     "Solo housed in vial w/ moist Kim-wipe for ~24h."];
+    ["Female, 6-7 days old.";...
+     "Housed in female-only vial since 1 days old.";...
+     "Solo housed in vial w/ moist Kim-wipe for ~18 h."];
 
-trialType = 2;
+trialType = 4;
 
-if trialType == 1
+if trialType == 1 % Panels ON, laser/LED OFF.
     USE_PANELS = true;
     USE_LASER = false;
     USE_LED = false; % Code currently won't work w/ LED & LASER both set to 'true'.
 
-elseif trialType == 2
+elseif trialType == 2 % Panels ON, laser ON.
     USE_PANELS = true;
     USE_LASER = true;
     USE_LED = false; % Code currently won't work w/ LED & LASER both set to 'true'.
 
-elseif trialType == 3
+elseif trialType == 3 % Panels OFF, laser ON.
     USE_PANELS = false;
     USE_LASER = true;
     USE_LED = false;
+
+elseif trialType == 4 % Panels ON, LED ON.
+    USE_PANELS = true;
+    USE_LASER = false;
+    USE_LED = true;
+
+elseif trialType == 5 % Panels OFF, LED ON.
+    USE_PANELS = false;
+    USE_LASER = false;
+    USE_LED = true;
 
 end
 
@@ -48,21 +63,22 @@ daqRate = 10000; % Hz
 % start with a trigger, or just have the pattern start if that is
 % easier.... 
 panelParams.panelModeNum = [3, 0];
-panelParams.patternNum = 2;
-panelParams.initialPosition = [44, 0]; %[4, 6] [44, 2]
+panelParams.patternNum = 7;
+panelParams.initialPosition = [0, 0]; %[44, 0]; %[4, 6] [44, 2]
 
 % Configure 850nm laser pulse width modulation settings:
 laserParams.freq = 200; % Hz
-laserParams.dutyCyc = 12; % percent, time(on)/(time(on)+time(off))
-laserParams.delay = 1*60; % seconds
+laserParams.dutyCyc = 8; % percent, time(on)/(time(on)+time(off))
+laserParams.delay = 5; % seconds
 laserParams.dur = trialDuration - laserParams.delay; % seconds
 
 % Configure LED flashes
-LEDParams.baselineTime = 0; % initial time LED off in seconds
-LEDParams.LEDonTime = 0.1; % time LED on in seconds
-LEDParams.afterTime = 0.1; % time LED off in seconds
-LEDParams.REP_NUM = 10000; % sum(LEDParams)*REP_NUM = 600 for 10 min trial;
-
+LEDParams.delay = 900; % (seconds)
+LEDParams.LEDOnTime = 1; % 0.1 % time LED on (seconds)
+LEDParams.LEDPulseOnTime = 0.1; % 0.05
+LEDParams.LEDPulseOffTime = 0.9; % 0.05
+LEDParams.interStimDur = 29;
+LEDParams.dur = trialDuration - LEDParams.delay; % (seconds)
 
 %% Start FicTrac in background from current experiment directory (config file must be in directory)
 
@@ -85,10 +101,9 @@ cmdStr2 = ['cd "' Socket_PATH '" & py -3.10 ' SOCKET_SCRIPT_NAME ' &'];
 
 if(USE_PANELS == 1)
     % keep inside if statemnet
-    setUpClosedLoopPanelTrial(panelParams);    
+    setUpClosedLoopPanelTrial(panelParams);
     Panel_com('start');
 end
-
 
 %% Set up DAQ
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
@@ -126,7 +141,7 @@ dq.Channels(4).TerminalConfig = 'SingleEnded';
 if USE_LASER == 1
     daqCommand = setUpLaserCommands(laserParams, dq.Rate);
 elseif USE_LED == 1
-    daqCommand = setUpLEDCommands(LEDParams, dq);
+    daqCommand = setUpLEDCommands(LEDParams, dq.Rate);
 else
     daqCommand = zeros(trialDuration * dq.Rate, 1);
 end
